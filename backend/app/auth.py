@@ -1,6 +1,7 @@
 from functools import wraps
 
 from flask import g, request
+from flask_restful import abort
 
 from app.models.token import Token
 
@@ -16,6 +17,9 @@ def authorize(func):
             token = Token.find_by_token(jwt_token)
             if token is not None:
                 user = token.user
+
+        if user is None:
+            abort(401)
 
         g.user = user
 
