@@ -4,15 +4,7 @@ from flask_restful import abort, fields, marshal_with, Resource
 
 from app.auth import authorize
 from app.models.meal import Meal
-
-
-meal_resource_fields = {
-    'id': fields.Integer,
-    'owner_user_id': fields.Integer,
-    'text': fields.String,
-    'entry_datetime': fields.DateTime(dt_format='iso8601'),
-    'calories': fields.Integer(attribute='calorie_count')
-}
+from app.resources.meal import meal_resource_fields
 
 
 meals_resource_fields = {
@@ -64,4 +56,3 @@ class MealsResource(Resource):
 
         result = query.paginate(page, per_page=50, error_out=False)
         return { 'meals': result.items }
-
