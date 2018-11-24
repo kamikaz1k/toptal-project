@@ -5,6 +5,7 @@ from app.database import db
 from app.resources.users import UsersResource
 from app.resources.login import LoginResource
 from app.resources.logout import LogoutResource
+from app.resources.meals import MealsResource
 
 
 class PingResource(Resource):
@@ -29,6 +30,10 @@ def create_api():
     api.add_resource(
         LogoutResource,
         '/auth/logout'
+    )
+    api.add_resource(
+        MealsResource,
+        '/api/meals'
     )
 
     return api
