@@ -3,6 +3,7 @@ from flask_restful import Resource, Api
 
 from app.database import db
 from app.resources.users import UsersResource
+from app.resources.login import LoginResource
 
 
 class PingResource(Resource):
@@ -10,19 +11,21 @@ class PingResource(Resource):
         return {'version': '1'}
 
 
-api = Api()
-
-
-api.add_resource(
-    PingResource,
-    '/ping'
-)
-
-
-api.add_resource(
-    UsersResource,
-    '/api/users'
-)
+def create_api():
+    api = Api()
+    api.add_resource(
+        PingResource,
+        '/ping'
+    )
+    api.add_resource(
+        UsersResource,
+        '/api/users'
+    )
+    api.add_resource(
+        LoginResource,
+        '/auth/login'
+    )
+    return api
 
 
 def get_db_url():
@@ -35,6 +38,9 @@ def create_app():
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = get_db_url()
+    app.config['JWT_SECRET'] = "JWT_SECRET_KEY"
+
+    api = create_api()
 
     db.init_app(app)
     api.init_app(app)
@@ -44,8 +50,4 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    # import pdb; pdb.set_trace()
-    # with app.app_context():
-    #     # import models...
-    #     db.create_all()
     app.run(debug=True)
