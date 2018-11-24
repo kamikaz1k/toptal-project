@@ -4,6 +4,7 @@ from flask_restful import Resource, Api
 from app.database import db
 from app.resources.users import UsersResource
 from app.resources.login import LoginResource
+from app.resources.logout import LogoutResource
 
 
 class PingResource(Resource):
@@ -25,6 +26,11 @@ def create_api():
         LoginResource,
         '/auth/login'
     )
+    api.add_resource(
+        LogoutResource,
+        '/auth/logout'
+    )
+
     return api
 
 
