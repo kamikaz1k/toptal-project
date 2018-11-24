@@ -1,3 +1,4 @@
+import bcrypt
 from flask import request
 from flask_restful import abort, Resource
 
@@ -17,11 +18,14 @@ class UsersResource(Resource):
             # if user exists, throw
             abort(http_status_code=409, message="{} exists already".format(params['email']))
 
+        password = params['password']
+        hashed_pwd = bcrypt.hashpw(password, bcrypt.gensalt())
+
         # else create
         user = User(
             name=params['name'],
             email=params['email'],
-            password=params['password']
+            password=hashed_pwd
         )
 
         User.query.session.add(user)
