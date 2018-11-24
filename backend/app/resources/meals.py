@@ -11,7 +11,12 @@ meal_resource_fields = {
     'owner_user_id': fields.Integer,
     'text': fields.String,
     'entry_datetime': fields.DateTime(dt_format='iso8601'),
-    'calories': fields.Integer
+    'calories': fields.Integer(attribute='calorie_count')
+}
+
+
+meals_resource_fields = {
+   'meals': fields.List(fields.Nested(meal_resource_fields))
 }
 
 
@@ -42,10 +47,21 @@ class MealsResource(Resource):
         Meal.query.session.add(new_meal)
         Meal.query.session.commit()
 
-        return {
-            'id': new_meal.id,
-            'owner_user_id': new_meal.owner_user_id,
-            'text': new_meal.text,
-            'entry_datetime': new_meal.entry_datetime,
-            'calories': new_meal.calorie_count
-        }
+        return new_meal
+
+    @marshal_with(meals_resource_fields)
+    def get(self):
+
+        current_user = g.user
+        # for later
+        # parser = reqparse.RequestParser()
+        page = int(request.args.get('p', 1))
+
+        query = Meal.query.filter(
+            Meal.owner_user_id == current_user.id,
+            Meal.deleted_at.is_(None)
+        )
+
+        result = query.paginate(page, per_page=50, error_out=False)
+        return { 'meals': result.items }
+
