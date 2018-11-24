@@ -4,3 +4,4 @@ Flask-SQLAlchemy
 mysqlclient
 bcrypt
 PyJWT
+python-dateutil
