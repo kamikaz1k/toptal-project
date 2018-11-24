@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Resource, Api
 
-from database import db
+from app.database import db
 
 
 class PingResource(Resource):
