@@ -28,3 +28,7 @@ class User(db.Model):
 
     def is_admin(self):
         return any(r.name == RoleNames.admin for r in self.roles)
+
+    @property
+    def deleted(self):
+        return self.deleted_at is not None
