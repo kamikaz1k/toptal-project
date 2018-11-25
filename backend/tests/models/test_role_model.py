@@ -1,9 +1,6 @@
-from datetime import datetime
-
 from nose.tools import eq_
 
 from app.models.role import Role, RoleNames
-from app.models.user import User
 from tests import BaseDatabaseTestCase
 
 
