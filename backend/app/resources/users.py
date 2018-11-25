@@ -1,12 +1,27 @@
 import bcrypt
-from flask import request
-from flask_restful import abort, Resource
+from flask import g, request
+from flask_restful import abort, fields, marshal_with, Resource
 
-from app.models.role import Role
+from app.auth import authorize
+from app.models.role import Role, RoleNames
 from app.models.user import User
 
 
+user_resource_fields = {
+    'id': fields.Integer,
+    'email': fields.String,
+    'name': fields.String,
+    'deleted': fields.Boolean
+}
+
+
+users_resource_fields = {
+    'users': fields.List(fields.Nested(user_resource_fields))
+}
+
+
 class UsersResource(Resource):
+    @marshal_with(user_resource_fields, envelope='user')
     def post(self):
         # get request parameters
         params = request.get_json()
@@ -35,11 +50,16 @@ class UsersResource(Resource):
         User.query.session.add(user)
         User.query.session.commit()
 
-        return {
-            'user': {
-                'id': user.id,
-                'email': user.email,
-                'name': user.name,
-                'password': user.password
-            }
-        }
+        return user
+
+    @authorize
+    @marshal_with(users_resource_fields)
+    def get(self):
+
+        if not g.user.is_admin() or not g.user.is_user_manager():
+            abort(401)
+
+        query = User.query
+        # pagination
+        # query.paginate(page, per_page=50, error_out=False)
+        return { 'users': query.all() }
