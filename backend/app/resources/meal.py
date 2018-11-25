@@ -59,7 +59,10 @@ class MealResource(Resource):
         if meal.owner_user_id != g.user.id and not g.user.is_admin():
             abort(401)
 
-        update_meal(properties_to_update, meal)
+        props = properties_to_update['meal'].copy()
+        props['calorie_count'] = props['calories']
+
+        meal.update(**props)
         meal.save()
 
         return meal

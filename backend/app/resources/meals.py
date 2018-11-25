@@ -26,18 +26,13 @@ class MealsResource(Resource):
         if params is None:
             abort(400, message="invalid params")
 
-        datetime = params.get('datetime') # utc datetime
-        datetime = parse(datetime)
+        props = params['meal'].copy()
+        props['calorie_count'] = props['calories']
 
-        new_meal = Meal(
+        new_meal = Meal.create(
             owner_user_id=current_user.id,
-            text=params.get('text', ""),
-            entry_datetime=datetime,
-            calorie_count=params.get('calories')
+            **props
         )
-
-        Meal.query.session.add(new_meal)
-        Meal.query.session.commit()
 
         return new_meal
 
