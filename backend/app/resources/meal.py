@@ -39,7 +39,7 @@ class MealResource(Resource):
         if meal is None:
             abort(404)
 
-        if meal.owner_user_id != g.user.id:
+        if meal.owner_user_id != g.user.id and not g.user.is_admin():
             abort(401)
 
         return meal
@@ -56,7 +56,7 @@ class MealResource(Resource):
         if meal is None:
             abort(404)
 
-        if meal.owner_user_id != g.user.id:
+        if meal.owner_user_id != g.user.id and not g.user.is_admin():
             abort(401)
 
         update_meal(properties_to_update, meal)
@@ -73,7 +73,7 @@ class MealResource(Resource):
         if meal is None:
             abort(404)
 
-        if meal.owner_user_id != g.user.id:
+        if meal.owner_user_id != g.user.id and not g.user.is_admin():
             abort(401)
 
         meal.delete()
