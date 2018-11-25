@@ -60,9 +60,7 @@ class MealResource(Resource):
             abort(401)
 
         update_meal(properties_to_update, meal)
-
-        Meal.query.session.add(meal)
-        Meal.query.session.commit()
+        meal.save()
 
         return meal
 
