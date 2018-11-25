@@ -6,6 +6,7 @@ from app.resources.meal import MealResource
 from app.resources.meals import MealsResource
 from app.resources.login import LoginResource
 from app.resources.logout import LogoutResource
+from app.resources.user import UserResource
 from app.resources.users import UsersResource
 
 
@@ -23,6 +24,10 @@ def create_api():
     api.add_resource(
         UsersResource,
         '/api/users'
+    )
+    api.add_resource(
+        UserResource,
+        '/api/user/<int:user_id>'
     )
     api.add_resource(
         LoginResource,
@@ -57,7 +62,6 @@ def create_app():
     app.config['JWT_SECRET'] = "JWT_SECRET_KEY"
 
     api = create_api()
-
     db.init_app(app)
     api.init_app(app)
 

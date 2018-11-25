@@ -5,14 +5,7 @@ from flask_restful import abort, fields, marshal_with, Resource
 from app.auth import authorize
 from app.models.role import Role, RoleNames
 from app.models.user import User
-
-
-user_resource_fields = {
-    'id': fields.Integer,
-    'email': fields.String,
-    'name': fields.String,
-    'deleted': fields.Boolean
-}
+from app.resources.user import user_resource_fields
 
 
 users_resource_fields = {
