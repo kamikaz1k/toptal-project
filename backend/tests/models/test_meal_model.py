@@ -137,7 +137,6 @@ class TestMeal(BaseDatabaseTestCase):
 
         for i in range(9):
             entry_datetime = datetime.now() + relativedelta(hours=3 * i - 10)
-            print(entry_datetime.isoformat())
             self.create_meal(
                 text="Include Meal {}".format(i + 1),
                 entry_datetime=entry_datetime.isoformat()
@@ -155,4 +154,35 @@ class TestMeal(BaseDatabaseTestCase):
         eq_(len(Meal.query.all()), 9)
 
     def test_meal_query_by_date_time_range(self):
-        pass
+        start_date = datetime.now().date() - timedelta(days=5)
+        end_date = datetime.now().date() + timedelta(days=5)
+
+        start_time = datetime.now() - relativedelta(hours=2)
+        end_time = datetime.now() + relativedelta(hours=2)
+        start_time = start_time.replace(microsecond=0)
+        end_time = end_time.replace(microsecond=0)
+
+        for d in range(3):
+            for t in range(3):
+                entry_date = start_date + timedelta(days=(7 * d) + 1)
+                entry_time = start_time + relativedelta(hours=(4 * t) + 2)
+
+                entry_datetime = datetime.combine(entry_date, entry_time.time())
+                self.create_meal(
+                    text="Test Meal {}-{}".format(d + 1, t + 1),
+                    entry_datetime=entry_datetime.isoformat()
+                )
+
+        start_time = start_time.time().replace(microsecond=0)
+        end_time = end_time.time().replace(microsecond=0)
+
+        result = Meal.query_by_date_time_range(
+            self.user.id,
+            start_date=start_date.isoformat(),
+            end_date=end_date.isoformat(),
+            start_time=start_time.isoformat(),
+            end_time=end_time.isoformat()
+        )
+
+        eq_(len(result), 2)
+        eq_(len(Meal.query.all()), 9)
