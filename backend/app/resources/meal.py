@@ -34,9 +34,7 @@ class MealResource(Resource):
     @marshal_with(meal_resource_fields, envelope='meal')
     def get(self, meal_id):
 
-        meal = Meal.query.filter(
-            Meal.id == meal_id
-        ).one_or_none()
+        meal = Meal.get_by_id(meal_id)
 
         if meal is None:
             abort(404)
@@ -53,9 +51,7 @@ class MealResource(Resource):
         if properties_to_update is None:
             abort(400)
 
-        meal = Meal.query.filter(
-            Meal.id == meal_id
-        ).one_or_none()
+        meal = Meal.get_by_id(meal_id)
 
         if meal is None:
             abort(404)
@@ -69,3 +65,20 @@ class MealResource(Resource):
         Meal.query.session.commit()
 
         return meal
+
+    def delete(self, meal_id):
+
+        meal = Meal.query.filter(
+            Meal.id == meal_id
+        ).one_or_none()
+
+        if meal is None:
+            abort(404)
+
+        if meal.owner_user_id != g.user.id:
+            abort(401)
+
+        meal.delete()
+        meal.save()
+
+        return {}

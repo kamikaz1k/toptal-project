@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import func
 from sqlalchemy.schema import ForeignKey
 
@@ -16,3 +18,18 @@ class Meal(db.Model):
     updated_at = db.Column(db.TIMESTAMP, nullable=False, default=func.now(), onupdate=func.now)
     created_at = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     deleted_at = db.Column(db.TIMESTAMP, nullable=True)
+
+    @classmethod
+    def get_by_id(cls, meal_id):
+        return cls.query.filter(
+            cls.id == meal_id,
+            cls.deleted_at.is_(None)
+        ).one_or_none()
+
+    def delete(self):
+        if self.deleted_at is None:
+            self.deleted_at = datetime.now()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
