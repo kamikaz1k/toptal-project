@@ -44,9 +44,22 @@ class MealsResource(Resource):
         # parser = reqparse.RequestParser()
         page = int(request.args.get('p', 1))
 
-        query = Meal.query.filter(
+        keys = [
+            'start_date',
+            'end_date',
+            'start_time',
+            'end_time',
+        ]
+
+        query_options = {
+            key: request.args.get(key, None)
+            for key in keys
+        }
+
+        query = Meal.query_by_date_time_range(
             Meal.owner_user_id == current_user.id,
-            Meal.deleted_at.is_(None)
+            return_query=True,
+            **query_options
         )
 
         result = query.paginate(page, per_page=50, error_out=False)

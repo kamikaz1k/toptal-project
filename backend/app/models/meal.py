@@ -50,10 +50,11 @@ class Meal(db.Model):
         start_date=None,
         end_date=None,
         start_time=None,
-        end_time=None
+        end_time=None,
+        return_query=False
     ):
 
-        query = cls.query.filter(cls.owner_user_id == owner_user_id)
+        query = cls.query.filter(cls.owner_user_id == owner_user_id, cls.deleted_at.is_(None))
         # .order_by() ?
 
         if start_date is not None and end_date is not None:
@@ -72,7 +73,9 @@ class Meal(db.Model):
                 )
             )
 
-        # pagination?
+        if return_query:
+            return query
+
         return query.all()
 
     @classmethod
