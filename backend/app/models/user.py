@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
 
@@ -19,6 +21,17 @@ class User(db.Model):
     updated_at = db.Column(db.TIMESTAMP, nullable=False, default=func.now(), onupdate=func.now)
     created_at = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     deleted_at = db.Column(db.TIMESTAMP, nullable=True)
+
+    def delete(self):
+        if self.deleted_at is None:
+            self.deleted_at = datetime.now()
+
+    def reactivate(self):
+        self.deleted_at = None
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
     def is_user(self):
         return len(self.roles) == 0 or any(r.name == RoleNames.user for r in self.roles)
