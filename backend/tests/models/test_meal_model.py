@@ -139,7 +139,7 @@ class TestMeal(BaseDatabaseTestCase):
             entry_datetime = datetime.now() + relativedelta(hours=3 * i - 10)
             self.create_meal(
                 text="Include Meal {}".format(i + 1),
-                entry_datetime=entry_datetime.isoformat()
+                entry_datetime=entry_datetime.replace(microsecond=0).isoformat()
             )
 
         start_time = start_time.time().replace(microsecond=0).isoformat()
