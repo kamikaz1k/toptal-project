@@ -44,6 +44,38 @@ class Meal(db.Model):
         self.save()
 
     @classmethod
+    def query_by_date_time_range(
+        cls,
+        owner_user_id,
+        start_date=None,
+        end_date=None,
+        start_time=None,
+        end_time=None
+    ):
+
+        query = cls.query.filter(cls.owner_user_id == owner_user_id)
+        # .order_by() ?
+
+        if start_date is not None and end_date is not None:
+            query = query.filter(
+                cls.entry_date.between(
+                    start_date,
+                    end_date
+                )
+            )
+
+        if start_time is not None and end_time is not None:
+            query = query.filter(
+                cls.entry_time.between(
+                    start_time,
+                    end_time
+                )
+            )
+
+        # pagination?
+        return query.all()
+
+    @classmethod
     def get_by_id(cls, meal_id):
         return cls.query.filter(
             cls.id == meal_id,

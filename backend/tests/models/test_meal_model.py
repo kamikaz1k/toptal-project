@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from nose.tools import eq_, ok_
 
 from app.models.meal import Meal
@@ -107,3 +108,51 @@ class TestMeal(BaseDatabaseTestCase):
         eq_(queries_meal.text, new_text)
         eq_(queries_meal.entry_datetime, new_entry_datetime)
         eq_(queries_meal.calorie_count, new_calories)
+
+    def test_meal_query_by_date_range(self):
+
+        start_date = datetime.now().date() - timedelta(days=10)
+        end_date = start_date + timedelta(days=20)
+
+        for i in range(5):
+            entry_datetime = datetime.now() + timedelta(days=3 * i)
+            self.create_meal(
+                text="Include Meal {}".format(i + 1),
+                entry_datetime=entry_datetime.isoformat()
+            )
+
+        result = Meal.query_by_date_time_range(
+            self.user.id,
+            start_date=start_date.isoformat(),
+            end_date=end_date.isoformat()
+        )
+
+        eq_(len(result), 4)
+        eq_(len(Meal.query.all()), 5)
+
+    def test_meal_query_by_time_range(self):
+
+        start_time = datetime.now() - relativedelta(hours=8)
+        end_time = start_time + relativedelta(hours=16)
+
+        for i in range(9):
+            entry_datetime = datetime.now() + relativedelta(hours=3 * i - 10)
+            print(entry_datetime.isoformat())
+            self.create_meal(
+                text="Include Meal {}".format(i + 1),
+                entry_datetime=entry_datetime.isoformat()
+            )
+
+        start_time = start_time.time().replace(microsecond=0).isoformat()
+        end_time = end_time.time().replace(microsecond=0).isoformat()
+        result = Meal.query_by_date_time_range(
+            self.user.id,
+            start_time=start_time,
+            end_time=end_time
+        )
+
+        eq_(len(result), 6)
+        eq_(len(Meal.query.all()), 9)
+
+    def test_meal_query_by_date_time_range(self):
+        pass
