@@ -21,6 +21,14 @@ class Role(db.Model):
     deleted_at = db.Column(db.TIMESTAMP, nullable=True)
 
     @classmethod
+    def create_user_roles(cls):
+        for role in RoleNames:
+            role = cls(name=role)
+            cls.query.session.add(role)
+
+        cls.query.session.commit()
+
+    @classmethod
     def get_user_role(cls):
         return cls.query.filter(cls.name == RoleNames.user).first()
 
