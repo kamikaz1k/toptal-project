@@ -1,6 +1,11 @@
 from sqlalchemy import func
+from sqlalchemy.orm import relationship
 
 from app.database import db
+from app.models.role import (
+    role_association_table,
+    RoleNames
+)
 
 
 class User(db.Model):
@@ -9,7 +14,17 @@ class User(db.Model):
     email = db.Column(db.String(80), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(80), nullable=False)
+    roles = relationship("Role", secondary=role_association_table)
 
     updated_at = db.Column(db.TIMESTAMP, nullable=False, default=func.now(), onupdate=func.now)
     created_at = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     deleted_at = db.Column(db.TIMESTAMP, nullable=True)
+
+    def is_user(self):
+        return len(self.roles) == 0 or any(r.name == RoleNames.user for r in self.roles)
+
+    def is_user_manager(self):
+        return any(r.name == RoleNames.user_manager for r in self.roles)
+
+    def is_admin(self):
+        return any(r.name == RoleNames.admin for r in self.roles)
