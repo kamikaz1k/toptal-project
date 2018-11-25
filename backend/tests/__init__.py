@@ -9,6 +9,7 @@ class BaseDatabaseTestCase(object):
         }
         self.app = create_app(test_config)
 
+    def setup(self):
         with self.app.app_context():
             # db.drop_all_tables()
             db.engine.execute('SET FOREIGN_KEY_CHECKS = 0;')
@@ -18,7 +19,6 @@ class BaseDatabaseTestCase(object):
             # ---------
             db.create_all()
 
-    def setup(self):
         self._ctx = self.app.test_request_context()
         self._ctx.push()
 
