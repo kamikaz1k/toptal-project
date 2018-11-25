@@ -15,12 +15,12 @@ class TestRole(BaseDatabaseTestCase):
 
     def test_get_user_role(self):
         role = Role.get_user_role()
-        assert role.name == RoleNames.user
+        eq_(role.name, RoleNames.user)
 
     def test_get_user_manager_role(self):
         role = Role.get_user_manager_role()
-        assert role.name == RoleNames.user_manager
+        eq_(role.name, RoleNames.user_manager)
 
     def test_get_admin_role(self):
         role = Role.get_admin_role()
-        assert role.name == RoleNames.admin
+        eq_(role.name, RoleNames.admin)

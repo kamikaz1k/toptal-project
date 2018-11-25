@@ -29,8 +29,8 @@ class TestUser(BaseDatabaseTestCase):
         user.save()
 
         users = User.query.all()
-        assert users[0].email == user.email
-        assert users[0].password == user.password
+        eq_(users[0].email, user.email)
+        eq_(users[0].password, user.password)
 
     def test_user_delete(self):
 
@@ -44,10 +44,10 @@ class TestUser(BaseDatabaseTestCase):
 
         users = User.query.all()
 
-        assert users[0].email == user.email
-        assert users[0].password == user.password
+        eq_(users[0].email, user.email)
+        eq_(users[0].password, user.password)
+        eq_(users[0].deleted, True)
         assert users[0].deleted_at is not None
-        assert users[0].deleted
 
     def test_user_reactivate(self):
 
@@ -61,33 +61,33 @@ class TestUser(BaseDatabaseTestCase):
         user.save()
 
         users = User.query.all()
-        assert users[0].deleted_at is None
+        eq_(users[0].deleted_at, None)
 
 
     def test_user_is_user(self):
         user = self.create_user()
 
-        assert user.is_user()
+        eq_(user.is_user(), True)
 
         user.roles.append(self.create_role(RoleNames.user))
 
-        assert user.is_user()
-        assert not user.is_user_manager()
-        assert not user.is_admin()
+        eq_(user.is_user(), True)
+        eq_(user.is_user_manager(), False)
+        eq_(user.is_admin(), False)
 
     def test_user_is_user_manager(self):
         user_manager = self.create_user()
         user_manager.roles.append(self.create_role(RoleNames.user_manager))
 
-        assert not user_manager.is_user()
-        assert user_manager.is_user_manager()
-        assert not user_manager.is_admin()
+        eq_(user_manager.is_user(), False)
+        eq_(user_manager.is_user_manager(), True)
+        eq_(user_manager.is_admin(), False)
 
     def test_user_is_admin(self):
         admin = self.create_user()
         admin.roles.append(self.create_role(RoleNames.admin))
 
-        assert not admin.is_user()
-        assert not admin.is_user_manager()
-        assert admin.is_admin()
+        eq_(admin.is_user(), False)
+        eq_(admin.is_user_manager(), False)
+        eq_(admin.is_admin(), True)
 
