@@ -20,6 +20,18 @@ class Role(db.Model):
     created_at = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     deleted_at = db.Column(db.TIMESTAMP, nullable=True)
 
+    @classmethod
+    def get_user_role(cls):
+        return cls.query.filter(cls.name == RoleNames.user).first()
+
+    @classmethod
+    def get_user_manager_role(cls):
+        return cls.query.filter(cls.name == RoleNames.user_manager).first()
+
+    @classmethod
+    def get_admin_role(cls):
+        return cls.query.filter(cls.name == RoleNames.admin).first()
+
 
 role_association_table = db.Table('user_role', db.metadata,
    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),

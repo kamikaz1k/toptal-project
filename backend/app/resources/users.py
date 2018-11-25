@@ -2,6 +2,7 @@ import bcrypt
 from flask import request
 from flask_restful import abort, Resource
 
+from app.models.role import Role
 from app.models.user import User
 
 
@@ -27,6 +28,9 @@ class UsersResource(Resource):
             email=params['email'],
             password=hashed_pwd
         )
+
+        user_role = Role.get_user_role()
+        user.roles.append(user_role)
 
         User.query.session.add(user)
         User.query.session.commit()
