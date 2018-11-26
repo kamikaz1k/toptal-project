@@ -19,6 +19,11 @@ class UsersResource(Resource):
         # get request parameters
         params = request.get_json()
 
+        if params is None:
+            abort(400)
+
+        params = params['user']
+
         # get users by email
         existing = User.query.filter(User.email == params['email']).count()
 

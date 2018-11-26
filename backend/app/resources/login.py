@@ -40,9 +40,4 @@ class LoginResource(Resource):
         User.query.session.add(token)
         User.query.session.commit()
 
-        return {
-            'token': {
-                'email': existing_user.email,
-                'token': token.jwt_token
-            }
-        }
+        return { 'token': token.jwt_token }
