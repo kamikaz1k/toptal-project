@@ -1,0 +1,30 @@
+<div class="container">
+  {{#bs-form formLayout=formLayout model=this onSubmit=(route-action "signup") as |form|}}
+    {{form.element
+      controlType="email"
+      label="Email"
+      placeholder="Email"
+      property="email"
+      required=true
+    }}
+    {{form.element
+      controlType="text"
+      label="Name"
+      placeholder="Your Name"
+      property="name"
+      required=true
+    }}
+    {{form.element
+      controlType="password"
+      label="Password"
+      placeholder="Password"
+      property="password"
+      required=true helpText="Minimum 6 characters"
+    }}
+    {{bs-button
+      defaultText="Signup"
+      type="primary"
+      buttonType="submit"
+    }}
+  {{/bs-form}}
+</div>

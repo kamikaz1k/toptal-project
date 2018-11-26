@@ -1,0 +1,16 @@
+<div class="container">
+  Your Meals Page
+
+  <ul>
+    {{#each model.meals as |mealItem|}}
+      {{!-- {{food-list-item entry=mealItem}} --}}
+      <div>
+        <p>{{mealItem.ownerUserId}}</p>
+        <p>{{mealItem.text}}</p>
+        <p>{{mealItem.entryDatetime}}</p>
+        <p>{{mealItem.calories}}</p>
+      </div>
+    {{/each}}
+  </ul>
+</div>
+{{outlet}}
