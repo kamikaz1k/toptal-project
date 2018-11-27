@@ -12,6 +12,7 @@ Router.map(function() {
   this.route('meals', function() {
     this.route('list');
     this.route('new');
+    this.route('edit', { path: 'edit/:mealId' });
   });
 });
 
