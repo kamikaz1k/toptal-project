@@ -16,7 +16,7 @@ export default Route.extend({
           password: form.get('password')
         }
       ).then(() => {
-        this.transitionTo("meals");
+        this.transitionTo("meals.list");
       }).catch(() => {
         alert("Login failed");
       });
