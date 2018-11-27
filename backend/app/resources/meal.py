@@ -15,7 +15,7 @@ meal_resource_fields = {
     'id': fields.Integer,
     'owner_user_id': fields.Integer,
     'text': fields.String,
-    'entry_datetime': fields.DateTime(dt_format='iso8601'),
+    'entry_datetime': fields.DateTime(dt_format='rfc822'),
     'calories': fields.Integer(attribute='calorie_count')
 }
 
