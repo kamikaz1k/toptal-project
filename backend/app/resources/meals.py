@@ -55,7 +55,7 @@ class MealsResource(Resource):
         }
 
         query = Meal.query_by_date_time_range(
-            Meal.owner_user_id == current_user.id,
+            owner_user_id=current_user.id,
             return_query=True,
             **query_options
         )
