@@ -11,14 +11,14 @@
         <p>userId: {{userItem.id}}</p>
         <p>email: {{userItem.email}}</p>
         <p>name: {{userItem.name}}</p>
-        {{#if mealItem.deleted}}
-          <p>Status: Deleted</p>
-        {{else}}
+        {{#if userItem.active}}
           <p>Status: Active</p>
+        {{else}}
+          <p>Status: Deleted</p>
         {{/if}}
-        {{!-- {{#link-to "meals.edit" mealItem.id}}
+        {{#link-to "users.edit" userItem.id}}
           <button class="btn btn-primary">Edit</button>
-        {{/link-to}} --}}
+        {{/link-to}}
         {{!-- <button class="btn btn-danger" {{action "deleteMeal" mealItem.id}}>Delete</button> --}}
       </li>
     {{/each}}
