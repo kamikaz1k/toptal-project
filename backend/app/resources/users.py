@@ -54,7 +54,7 @@ class UsersResource(Resource):
     @marshal_with(users_resource_fields)
     def get(self):
 
-        if not g.user.is_admin() or not g.user.is_user_manager():
+        if not g.user.is_admin() and not g.user.is_user_manager():
             abort(401)
 
         query = User.query
