@@ -10,6 +10,22 @@ export default Route.extend(AuthenticatedRouteMixin, {
     return {
       users: this.get('store').query('user', { p: 1 })
     }
+  },
+
+  actions: {
+    deleteUser(userId) {
+      console.log("delete!", userId);
+      let user = this.get('store').peekRecord('user', userId);
+      if (user) {
+        user.deleteRecord();
+        user.save().then(() => {
+          console.log("deleted userId ", userId);
+        }).catch(e => {
+          console.error(e);
+          alert("something went wrong...");
+        })
+      }
+    }
   }
 
 });
