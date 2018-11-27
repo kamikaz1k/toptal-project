@@ -13,7 +13,7 @@ export default Route.extend(AuthenticatedRouteMixin, {
       this.get('store').createRecord('meal', {
         text: form.get('text'),
         calories: form.get('calories'),
-        entryDatetime: moment(form.get('entryDatetime'), 'YYYY-MM-DD HH:mm A').toDate()
+        entryDatetime: moment(form.get('entryDatetime'), 'YYYY-MM-DD hh:mm A').toDate()
       }).save().then(() => {
         this.transitionTo('meals.list');
       }).catch(e => {
