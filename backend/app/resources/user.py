@@ -10,11 +10,12 @@ user_resource_fields = {
     'id': fields.Integer,
     'email': fields.String,
     'name': fields.String,
-    'deleted': fields.Boolean
+    'active': fields.Boolean(attribute=lambda m: not m.deleted)
 }
 
 
 def update_user(props, user):
+
     user.email = props.get('email', user.email)
     user.name = props.get('name', user.name)
 
@@ -40,7 +41,7 @@ class UserResource(Resource):
         if user is None:
             abort(404)
 
-        if user.id != g.user.id and not (g.user.is_user_manager() or g.user.is_user_manager()):
+        if user.id != g.user.id and not (g.user.is_admin() or g.user.is_user_manager()):
             abort(401)
 
         return user
@@ -53,10 +54,11 @@ class UserResource(Resource):
         if user is None:
             abort(404)
 
-        if user.id != g.user.id and not (g.user.is_user_manager() or g.user.is_user_manager()):
+        if user.id != g.user.id and not (g.user.is_admin() or g.user.is_user_manager()):
             abort(401)
 
-        update_user(request.get_json(), user)
+        props = request.get_json()
+        update_user(props['user'], user)
         user.save()
 
         return user
@@ -68,7 +70,7 @@ class UserResource(Resource):
         if user is None:
             abort(404)
 
-        if user.id != g.user.id and not (g.user.is_user_manager() or g.user.is_user_manager()):
+        if user.id != g.user.id and not (g.user.is_admin() or g.user.is_user_manager()):
             abort(401)
 
         user.delete()
