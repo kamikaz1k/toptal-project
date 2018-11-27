@@ -32,7 +32,13 @@ class LoginResource(Resource):
         # else create
         expiry = datetime.now() + timedelta(days=30)
         jwt_token = jwt.encode(
-            dict(email=existing_user.email, role="placeholder_role", exp=round(expiry.timestamp())),
+            dict(
+                email=existing_user.email,
+                roles={
+                    'is_user_manager': existing_user.is_user_manager(),
+                    'is_admin': existing_user.is_admin()
+                },
+                exp=round(expiry.timestamp())),
             current_app.config['JWT_SECRET']
         )
         token = Token(user_id=existing_user.id, jwt_token=jwt_token, expires_on=expiry)
