@@ -14,6 +14,7 @@ Router.map(function() {
     this.route('new');
     this.route('edit', { path: 'edit/:mealId' });
   });
+  this.route('logout');
 });
 
 export default Router;
