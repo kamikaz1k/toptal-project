@@ -16,6 +16,10 @@ Router.map(function() {
     this.route('search');
   });
   this.route('logout');
+
+  this.route('users', function() {
+    this.route('list');
+  });
 });
 
 export default Router;

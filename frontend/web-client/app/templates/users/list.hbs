@@ -1,0 +1,26 @@
+<div class="container">
+  <h3>User Admin Page</h3>
+
+  <ul class="list-group">
+    <li class="list-group-item">
+      {{!-- {{#link-to "meals.new"}}Add new meal{{/link-to}} | {{#link-to "meals.search"}}Search Meals{{/link-to}} --}}
+      Add new User
+    </li>
+    {{#each model.users as |userItem|}}
+      <li class="list-group-item">
+        <p>userId: {{userItem.id}}</p>
+        <p>email: {{userItem.email}}</p>
+        <p>name: {{userItem.name}}</p>
+        {{#if mealItem.deleted}}
+          <p>Status: Deleted</p>
+        {{else}}
+          <p>Status: Active</p>
+        {{/if}}
+        {{!-- {{#link-to "meals.edit" mealItem.id}}
+          <button class="btn btn-primary">Edit</button>
+        {{/link-to}} --}}
+        {{!-- <button class="btn btn-danger" {{action "deleteMeal" mealItem.id}}>Delete</button> --}}
+      </li>
+    {{/each}}
+  </ul>
+</div>
