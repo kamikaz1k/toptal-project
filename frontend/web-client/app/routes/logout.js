@@ -1,8 +1,9 @@
 import Route from '@ember/routing/route';
+import { inject } from '@ember/service';
 
 export default Route.extend({
 
-  session: Ember.inject.service('session'),
+  session: inject(),
 
   beforeModel(transition) {
     this.get('session').invalidate().then(() => {
