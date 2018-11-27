@@ -4,5 +4,5 @@ const { attr } = DS;
 export default DS.Model.extend({
   email: attr('string'),
   name: attr('string'),
-  deleted: attr('boolean')
+  active: attr('boolean')
 });
