@@ -2,9 +2,9 @@
   <a class="navbar-brand" href="#/meals/list">Toptal Calorie Tracker</a>
   {{!-- <button class="btn btn-outline-danger my-2 my-sm-0">Search</button> --}}
   {{#if isAdmin}}
-    <span>ADMIN</span>
+    {{#link-to 'users.list' class="btn"}}USERS{{/link-to}}
   {{else if isUserManager}}
-    <span>USER MGR</span>
+    {{#link-to 'users.list' class="btn"}}USERS{{/link-to}}
   {{/if}}
   {{#if session.isAuthenticated}}
     {{#link-to 'logout' class="btn"}}Logout{{/link-to}}
