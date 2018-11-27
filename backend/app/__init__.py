@@ -27,7 +27,7 @@ def create_api():
     )
     api.add_resource(
         UserResource,
-        '/api/user/<int:user_id>'
+        '/api/users/<int:user_id>'
     )
     api.add_resource(
         LoginResource,
@@ -43,7 +43,7 @@ def create_api():
     )
     api.add_resource(
         MealResource,
-        '/api/meal/<int:meal_id>'
+        '/api/meals/<int:meal_id>'
     )
 
     return api
