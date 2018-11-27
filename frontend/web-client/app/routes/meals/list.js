@@ -1,15 +1,16 @@
 import Route from '@ember/routing/route';
 import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import { inject } from '@ember/service';
+import { decamelize } from '@ember/string';
 
 export default Route.extend(AuthenticatedRouteMixin, {
 
   queryParams: {
     p: { refreshModel: true },
-    startDate: {},
-    endDate: {},
-    startTime: {},
-    endTime: {},
+    startDate: { refreshModel: true },
+    endDate: { refreshModel: true },
+    startTime: { refreshModel: true },
+    endTime: { refreshModel: true },
   },
 
   store: inject(),
@@ -22,10 +23,16 @@ export default Route.extend(AuthenticatedRouteMixin, {
   },
 
   _buildQueryOptions(params) {
-    let queryParams = Object.assign({}, params);
+    let queryParams = {};
+
+    Object.keys(params).forEach(key => {
+      queryParams[decamelize(key)] = params[key];
+    });
+
     if (queryParams.p == undefined) {
       queryParams.p = 1;
     }
+
     return queryParams;
   },
 
