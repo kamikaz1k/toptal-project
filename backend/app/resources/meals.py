@@ -28,11 +28,9 @@ class MealsResource(Resource):
 
         props = params['meal'].copy()
         props['calorie_count'] = props['calories']
+        props['owner_user_id'] = current_user.id
 
-        new_meal = Meal.create(
-            owner_user_id=current_user.id,
-            **props
-        )
+        new_meal = Meal.create(**props)
 
         return new_meal
 
@@ -62,5 +60,5 @@ class MealsResource(Resource):
             **query_options
         )
 
-        result = query.paginate(page, per_page=50, error_out=False)
+        result = query.paginate(page, per_page=10, error_out=False)
         return { 'meals': result.items }
