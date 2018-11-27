@@ -1,17 +1,22 @@
 <div class="container">
   <h3>Your Meals Page</h3>
 
-  <ul>
-    <div>
+  <ul class="list-group">
+    <li class="list-group-item">
       {{#link-to "meals.new"}}Add new meal{{/link-to}}
-    </div>
+    </li>
     {{#each model.meals as |mealItem|}}
-      <div>
+      <li class="list-group-item">
         {{!-- <p>Owner: {{mealItem.ownerUserId}}</p> --}}
         <p>Meal: {{mealItem.text}}</p>
         <p>Eaten At: {{moment-format mealItem.entryDatetime 'MM-DD-YYYY @ hh:mm A'}}</p>
         <p>Calories: {{mealItem.calories}}</p>
-      </div>
+        {{#link-to "meals.edit" mealItem.id}}
+          <button class="btn btn-primary">Edit</button>
+        {{/link-to}}
+        <button class="btn btn-danger" {{action "deleteMeal" mealItem.id}}>Delete</button>
+
+      </li>
     {{/each}}
   </ul>
 </div>
