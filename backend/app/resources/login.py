@@ -33,6 +33,7 @@ class LoginResource(Resource):
         expiry = datetime.now() + timedelta(days=30)
         jwt_token = jwt.encode(
             dict(
+                user_id=existing_user.id,
                 email=existing_user.email,
                 roles={
                     'is_user_manager': existing_user.is_user_manager(),
