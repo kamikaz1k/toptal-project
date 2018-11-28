@@ -5,5 +5,6 @@ export default DS.Model.extend({
   email: attr('string'),
   name: attr('string'),
   caloriesPerDay: attr('number'),
+  password: attr('string'),
   active: attr('boolean')
 });
