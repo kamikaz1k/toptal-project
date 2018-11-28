@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 from dateutil.parser import parse
 
 from sqlalchemy import desc, func
@@ -44,6 +44,50 @@ class Meal(db.Model):
         self.save()
 
     @classmethod
+    def build_date_time_range_query(
+        cls,
+        owner_user_id,
+        start_datetime=None,
+        end_datetime=None,
+        start_time=None,
+        end_time=None
+    ):
+
+        query = cls.query.filter(cls.owner_user_id == owner_user_id, cls.deleted_at.is_(None))
+        query = query.order_by(desc(cls.entry_datetime))
+
+        has_datetime_range = start_datetime and end_datetime
+        has_time_range = start_time and end_time
+
+        if has_datetime_range:
+            query = query.filter(
+                cls.entry_datetime.between(
+                    parse(start_datetime),
+                    parse(end_datetime)
+                )
+            )
+
+        if has_time_range:
+            start_time = parse(start_time).time()
+            end_time = parse(end_time).time()
+
+            if start_time > end_time:
+                midnight = time()
+                query = query.filter(
+                    cls.entry_time.between(midnight, start_time),
+                    cls.entry_time.between(start_time, midnight)
+                )
+
+            else:
+                query = query.filter(
+                    cls.entry_time.between(start_time, end_time)
+                )
+
+
+        return query
+
+
+    @classmethod
     def query_by_date_time_range(
         cls,
         owner_user_id,
@@ -77,6 +121,43 @@ class Meal(db.Model):
             return query
 
         return query.all()
+
+    '''
+        entryDatetime.between(start_datetime, end_datetime)
+
+        if star_time > end_time
+
+          then the window should be 00 <= yes <= end_time
+          and start_time <= yes <= 24
+
+        else
+
+          date_time
+
+        start_date = parse(start_date).date()
+        end_date = parse(end_date).date()
+
+        if start_date > end_date:
+            midnight = date()
+            query = query.filter(
+                cls.entry_time.between(
+                    midnight,
+                    start_time
+                ),
+                cls.entry_time.between(
+                    start_time,
+                    midnight
+                ),
+            )
+
+        else:
+            query = query.filter(
+                cls.entry_time.between(
+                    start_time,
+                    end_time
+                )
+            )
+    '''
 
     @classmethod
     def get_by_id(cls, meal_id):

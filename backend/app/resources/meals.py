@@ -43,8 +43,8 @@ class MealsResource(Resource):
         page = int(request.args.get('p', 1))
 
         keys = [
-            'start_date',
-            'end_date',
+            'start_datetime',
+            'end_datetime',
             'start_time',
             'end_time',
         ]
@@ -54,11 +54,16 @@ class MealsResource(Resource):
             for key in keys
         }
 
-        query = Meal.query_by_date_time_range(
+        query = Meal.build_date_time_range_query(
             owner_user_id=current_user.id,
-            return_query=True,
             **query_options
         )
+
+        # query = Meal.query_by_date_time_range(
+        #     owner_user_id=current_user.id,
+        #     return_query=True,
+        #     **query_options
+        # )
 
         result = query.paginate(page, per_page=10, error_out=False)
         return { 'meals': result.items }
