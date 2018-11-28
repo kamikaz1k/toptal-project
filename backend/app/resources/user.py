@@ -10,6 +10,7 @@ user_resource_fields = {
     'id': fields.Integer,
     'email': fields.String,
     'name': fields.String,
+    'calories_per_day': fields.Integer,
     'active': fields.Boolean(attribute=lambda m: not m.deleted)
 }
 
@@ -18,10 +19,11 @@ def update_user(props, user):
 
     user.email = props.get('email', user.email)
     user.name = props.get('name', user.name)
+    user.calories_per_day = props.get('calories_per_day', user.calories_per_day)
 
     # DELETE to be handled by `delete` method
     # SENTINEL = "NOTHING WAS PASSED"
-    # deleted = props.get('deleted', SENTINEL)
+    # deleted = props.get('active', SENTINEL)
     # if deleted is not SENTINEL:
     #     if deleted:
     #         user.delete()
