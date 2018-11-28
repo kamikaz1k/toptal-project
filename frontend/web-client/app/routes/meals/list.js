@@ -7,8 +7,8 @@ export default Route.extend(AuthenticatedRouteMixin, {
 
   queryParams: {
     p: { refreshModel: true },
-    startDate: { refreshModel: true },
-    endDate: { refreshModel: true },
+    startDatetime: { refreshModel: true },
+    endDatetime: { refreshModel: true },
     startTime: { refreshModel: true },
     endTime: { refreshModel: true },
   },

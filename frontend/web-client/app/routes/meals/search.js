@@ -19,11 +19,17 @@ export default Route.extend({
 
   actions: {
     setSearchParams(model) {
+
+      let startDatetime = moment(model.get('startDate'), DATE_FORMAT);
+      let endDatetime = moment(model.get('endDate'), DATE_FORMAT).add(1, 'days');
+      let startTime = moment(model.get('startTime'), TIME_FORMAT_AM);
+      let endTime = moment(model.get('endTime'), TIME_FORMAT_AM);
+
       let props = {
-        startDate: moment(model.get('startDate'), DATE_FORMAT).format(DATE_FORMAT),
-        endDate: moment(model.get('endDate'), DATE_FORMAT).format(DATE_FORMAT),
-        startTime: moment(model.get('startTime'), TIME_FORMAT_AM).format(TIME_FORMAT_ISO),
-        endTime: moment(model.get('endTime'), TIME_FORMAT_AM).format(TIME_FORMAT_ISO),
+        startDatetime: startDatetime.utc().toISOString(),
+        endDatetime: endDatetime.utc().toISOString(),
+        startTime: startTime.utc().format(TIME_FORMAT_ISO),
+        endTime: endTime.utc().format(TIME_FORMAT_ISO),
       }
       Object.keys(props).forEach(key => {
         if (props[key] == "Invalid date") {
