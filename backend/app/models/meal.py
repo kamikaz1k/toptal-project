@@ -1,7 +1,7 @@
 from datetime import datetime
 from dateutil.parser import parse
 
-from sqlalchemy import func
+from sqlalchemy import desc, func
 from sqlalchemy.schema import ForeignKey
 
 from app.database import db
@@ -55,7 +55,7 @@ class Meal(db.Model):
     ):
 
         query = cls.query.filter(cls.owner_user_id == owner_user_id, cls.deleted_at.is_(None))
-        # .order_by() ?
+        query = query.order_by(desc(cls.entry_datetime))
 
         if start_date is not None and end_date is not None:
             query = query.filter(
