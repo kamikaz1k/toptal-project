@@ -10,7 +10,7 @@ export default Route.extend({
   actions: {
     login(form) {
       this.get('session').authenticate(
-        'authenticator:token',
+        'authenticator:token-with-revoke',
         {
           email: form.get('email'),
           password: form.get('password')

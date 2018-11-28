@@ -6,7 +6,8 @@ export default Route.extend({
   session: inject(),
 
   beforeModel(transition) {
-    this.get('session').invalidate().then(() => {
+    let session = this.get('session');
+    session.invalidate().then(() => {
       this.transitionTo('login');
     });
   }
