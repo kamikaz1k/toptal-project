@@ -25,3 +25,20 @@
     {{/each}}
   </ul>
 </div>
+
+<div class="container mt-3">
+  <nav aria-label="User list page navigation">
+    <ul class="pagination justify-content-end">
+      <li class="page-item">
+        {{#link-to 'users.list' (query-params p=previousPage) class="page-link"}}
+          Previous Page
+        {{/link-to}}
+      </li>
+      <li class="page-item">
+        {{#link-to 'users.list' (query-params p=nextPage) class="page-link"}}
+          Next Page
+        {{/link-to}}
+      </li>
+    </ul>
+  </nav>
+</div>
