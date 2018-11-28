@@ -18,15 +18,22 @@ export default Route.extend(AuthenticatedRouteMixin, {
     return this.get('store').findRecord('meal', params.mealId)
   },
 
+  _buildDatetimeQuery(datetime) {
+    let start_datetime = moment(datetime).startOf('day').utc();
+    let end_datetime = moment(datetime).endOf('day').utc();
+
+    return {
+      start_datetime: start_datetime.toISOString(),
+      end_datetime: end_datetime.toISOString()
+    }
+  },
+
   setupController(controller, model) {
     this._super(controller, model);
     let token = this.get('session.data.authenticated.token');
     let { user_id } = jwtDecode(token);
-    let entryDatetime = model.get('entryDatetime');
-    let query = {
-      start_date: moment(entryDatetime).format(DATE_FORMAT),
-      end_date: moment(entryDatetime).format(DATE_FORMAT)
-    };
+
+    let query = this._buildDatetimeQuery(model.get('entryDatetime'));
     this.get('store').query('meal', query).then(results => {
       controller.set('mealsOfDay', results);
     });
