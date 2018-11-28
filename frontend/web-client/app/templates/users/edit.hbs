@@ -9,7 +9,7 @@
         id="email"
         placeholder="user@domain.tld"
         value=model.email
-        required=True
+        required=true
       }}
     </div>
     <div class="form-group">
@@ -20,7 +20,18 @@
         id="name"
         placeholder="Jimmy Dean"
         value=model.name
-        required=True
+        required=true
+      }}
+    </div>
+    <div class="form-group">
+      <label for="caloriesPerDay">Calories per Day</label>
+      {{input
+        type="text"
+        class="form-control"
+        id="caloriesPerDay"
+        placeholder="Jimmy Dean"
+        value=model.caloriesPerDay
+        required=false
       }}
     </div>
     <div class="form-group">
@@ -30,7 +41,7 @@
         class="form-control"
         id="account-status"
         checked=model.active
-        required=True
+        required=true
       }}
     </div>
   </div>
