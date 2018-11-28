@@ -1,5 +1,10 @@
 <div class="container">
   <h3>Edit Your Meal</h3>
+  {{#if overBudget}}
+    <h4>You are over your caloric budget! {{caloriesConsumed}} vs {{caloriesForUser}}</h4>
+  {{else}}
+    <h4 class="btn btn-outline-success">Great job! You only ate {{caloriesConsumed}} kcal</h4>
+  {{/if}}
   <div>
     <div class="form-group">
       <label for="text">What did you eat?</label>
