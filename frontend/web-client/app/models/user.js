@@ -6,5 +6,7 @@ export default DS.Model.extend({
   name: attr('string'),
   caloriesPerDay: attr('number'),
   password: attr('string'),
-  active: attr('boolean')
+  active: attr('boolean'),
+  isAdmin: attr('boolean', { defaultValue: false }),
+  isUserManager: attr('boolean', { defaultValue: false })
 });

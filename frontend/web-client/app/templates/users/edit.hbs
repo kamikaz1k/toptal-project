@@ -35,6 +35,26 @@
       }}
     </div>
     <div class="form-group">
+      <label for="isAdmin">Is Admin</label>
+      {{input
+        type="checkbox"
+        class="form-control"
+        id="isAdmin"
+        checked=model.isAdmin
+        required=True
+      }}
+    </div>
+    <div class="form-group">
+      <label for="isUserManager">Is User Manager</label>
+      {{input
+        type="checkbox"
+        class="form-control"
+        id="isUserManager"
+        checked=model.isUserManager
+        required=True
+      }}
+    </div>
+    <div class="form-group">
       <label for="account-status">Status</label>
       {{#if model.active}}
         <div>Status: Active</div>
