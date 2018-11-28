@@ -36,6 +36,18 @@ export default Route.extend(AuthenticatedRouteMixin, {
     return queryParams;
   },
 
+  setupController(controller, model) {
+    this._super(...arguments);
+
+    let page = parseInt(controller.get('p')) || 1;
+
+    if (page > 1) {
+      controller.set('previousPage', page - 1);
+    }
+    controller.set('nextPage', page + 1);
+
+  },
+
   actions: {
     deleteMeal(mealId) {
       console.log("delete!", mealId);

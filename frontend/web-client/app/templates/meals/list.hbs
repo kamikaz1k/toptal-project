@@ -7,7 +7,6 @@
     </li>
     {{#each model.meals as |mealItem|}}
       <li class="list-group-item">
-        {{!-- <p>Owner: {{mealItem.ownerUserId}}</p> --}}
         <p>Meal: {{mealItem.text}}</p>
         <p>Eaten At: {{moment-format mealItem.entryDatetime 'MM-DD-YYYY @ hh:mm A'}}</p>
         <p>Calories: {{mealItem.calories}}</p>
@@ -19,4 +18,20 @@
       </li>
     {{/each}}
   </ul>
+</div>
+<div class="container mt-3">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-end">
+      <li class="page-item">
+        {{#link-to 'meals.list' (query-params p=previousPage) class="page-link"}}
+          Previous Page
+        {{/link-to}}
+      </li>
+      <li class="page-item">
+        {{#link-to 'meals.list' (query-params p=nextPage) class="page-link"}}
+          Next Page
+        {{/link-to}}
+      </li>
+    </ul>
+  </nav>
 </div>
