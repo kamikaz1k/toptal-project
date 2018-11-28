@@ -23,6 +23,10 @@ class User(db.Model):
     created_at = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     deleted_at = db.Column(db.TIMESTAMP, nullable=True)
 
+    @classmethod
+    def query_active_users(cls):
+        return cls.query.filter(cls.deleted_at.is_(None))
+
     def delete(self):
         if self.deleted_at is None:
             self.deleted_at = datetime.now()

@@ -57,7 +57,10 @@ class UsersResource(Resource):
         if not g.user.is_admin() and not g.user.is_user_manager():
             abort(401)
 
-        query = User.query
-        # pagination
-        # query.paginate(page, per_page=50, error_out=False)
-        return { 'users': query.all() }
+        page = int(request.args.get('p', 1))
+
+        query = User.query_active_users()
+
+        result = query.paginate(page, per_page=50, error_out=False)
+
+        return { 'users': result.items }
