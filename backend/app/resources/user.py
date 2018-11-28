@@ -11,24 +11,10 @@ user_resource_fields = {
     'email': fields.String,
     'name': fields.String,
     'calories_per_day': fields.Integer,
-    'active': fields.Boolean(attribute=lambda m: not m.deleted)
+    'active': fields.Boolean(attribute=lambda m: not m.deleted),
+    'is_admin': fields.Boolean,
+    'is_user_manager': fields.Boolean,
 }
-
-
-def update_user(props, user):
-
-    user.email = props.get('email', user.email)
-    user.name = props.get('name', user.name)
-    user.calories_per_day = props.get('calories_per_day', user.calories_per_day)
-
-    # DELETE to be handled by `delete` method
-    # SENTINEL = "NOTHING WAS PASSED"
-    # deleted = props.get('active', SENTINEL)
-    # if deleted is not SENTINEL:
-    #     if deleted:
-    #         user.delete()
-    #     else:
-    #         user.reactivate()
 
 
 class UserResource(Resource):
@@ -43,7 +29,7 @@ class UserResource(Resource):
         if user is None:
             abort(404)
 
-        if user.id != g.user.id and not (g.user.is_admin() or g.user.is_user_manager()):
+        if user.id != g.user.id and not g.user.can_update_users:
             abort(401)
 
         return user
@@ -56,11 +42,17 @@ class UserResource(Resource):
         if user is None:
             abort(404)
 
-        if user.id != g.user.id and not (g.user.is_admin() or g.user.is_user_manager()):
+        if user.id != g.user.id and not g.user.can_update_users:
             abort(401)
 
         props = request.get_json()
-        update_user(props['user'], user)
+        props = props['user']
+
+        if not g.user.can_update_users:
+            del props['is_admin']
+            del props['is_user_manager']
+
+        user.update(**props)
         user.save()
 
         return user
@@ -72,7 +64,7 @@ class UserResource(Resource):
         if user is None:
             abort(404)
 
-        if user.id != g.user.id and not (g.user.is_admin() or g.user.is_user_manager()):
+        if user.id != g.user.id and not g.user.can_update_users:
             abort(401)
 
         user.delete()

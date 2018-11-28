@@ -35,18 +35,13 @@ class UsersResource(Resource):
         password = params['password']
         hashed_pwd = bcrypt.hashpw(password, bcrypt.gensalt())
 
-        # else create
-        user = User(
-            name=params['name'],
-            email=params['email'],
-            password=hashed_pwd
-        )
+        create_props = params.copy()
+        create_props['password'] = hashed_pwd
 
-        user_role = Role.get_user_role()
-        user.roles.append(user_role)
+        create_props.pop('is_admin', None)
+        create_props.pop('is_user_manager', None)
 
-        User.query.session.add(user)
-        User.query.session.commit()
+        user = User.create(**create_props)
 
         return user
 
@@ -54,7 +49,7 @@ class UsersResource(Resource):
     @marshal_with(users_resource_fields)
     def get(self):
 
-        if not g.user.is_admin() and not g.user.is_user_manager():
+        if not g.user.can_update_users:
             abort(401)
 
         page = int(request.args.get('p', 1))

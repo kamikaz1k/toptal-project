@@ -36,8 +36,8 @@ class LoginResource(Resource):
                 user_id=existing_user.id,
                 email=existing_user.email,
                 roles={
-                    'is_user_manager': existing_user.is_user_manager(),
-                    'is_admin': existing_user.is_admin()
+                    'is_user_manager': existing_user.is_user_manager,
+                    'is_admin': existing_user.is_admin
                 },
                 exp=round(expiry.timestamp())),
             current_app.config['JWT_SECRET']
