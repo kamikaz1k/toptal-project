@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from dateutil.parser import parse
 
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, or_
 from sqlalchemy.schema import ForeignKey
 
 from app.database import db
@@ -19,7 +19,7 @@ class Meal(db.Model):
     entry_date = db.Column(db.Date, nullable=False)
     entry_time = db.Column(db.Time, nullable=False)
 
-    updated_at = db.Column(db.TIMESTAMP, nullable=False, default=func.now(), onupdate=func.now)
+    updated_at = db.Column(db.TIMESTAMP, nullable=False, default=func.now(), onupdate=func.now())
     created_at = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
     deleted_at = db.Column(db.TIMESTAMP, nullable=True)
 
@@ -72,10 +72,11 @@ class Meal(db.Model):
             end_time = parse(end_time).time()
 
             if start_time > end_time:
-                midnight = time()
                 query = query.filter(
-                    cls.entry_time.between(midnight, start_time),
-                    cls.entry_time.between(start_time, midnight)
+                    or_(
+                        cls.entry_time.between(start_time, time(23, 59)),
+                        cls.entry_time.between(time(0), end_time)
+                    )
                 )
 
             else:
