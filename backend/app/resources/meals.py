@@ -38,8 +38,7 @@ class MealsResource(Resource):
     def get(self):
 
         current_user = g.user
-        # for later
-        # parser = reqparse.RequestParser()
+
         page = int(request.args.get('p', 1))
 
         keys = [
@@ -58,12 +57,6 @@ class MealsResource(Resource):
             owner_user_id=current_user.id,
             **query_options
         )
-
-        # query = Meal.query_by_date_time_range(
-        #     owner_user_id=current_user.id,
-        #     return_query=True,
-        #     **query_options
-        # )
 
         result = query.paginate(page, per_page=10, error_out=False)
         return { 'meals': result.items }
