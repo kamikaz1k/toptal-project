@@ -67,27 +67,27 @@ class TestUser(BaseDatabaseTestCase):
     def test_user_is_user(self):
         user = self.create_user()
 
-        eq_(user.is_user(), True)
+        eq_(user.is_user, True)
 
         user.roles.append(self.create_role(RoleNames.user))
 
-        eq_(user.is_user(), True)
-        eq_(user.is_user_manager(), False)
-        eq_(user.is_admin(), False)
+        eq_(user.is_user, True)
+        eq_(user.is_user_manager, False)
+        eq_(user.is_admin, False)
 
     def test_user_is_user_manager(self):
         user_manager = self.create_user()
         user_manager.roles.append(self.create_role(RoleNames.user_manager))
 
-        eq_(user_manager.is_user(), False)
-        eq_(user_manager.is_user_manager(), True)
-        eq_(user_manager.is_admin(), False)
+        eq_(user_manager.is_user, False)
+        eq_(user_manager.is_user_manager, True)
+        eq_(user_manager.is_admin, False)
 
     def test_user_is_admin(self):
         admin = self.create_user()
         admin.roles.append(self.create_role(RoleNames.admin))
 
-        eq_(admin.is_user(), False)
-        eq_(admin.is_user_manager(), False)
-        eq_(admin.is_admin(), True)
+        eq_(admin.is_user, False)
+        eq_(admin.is_user_manager, False)
+        eq_(admin.is_admin, True)
 
