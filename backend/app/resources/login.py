@@ -19,7 +19,7 @@ class LoginResource(Resource):
         )
 
         if existing_user is None:
-            abort(400, msg="username and password do not match")
+            abort(401, msg="username and password do not match")
 
         token = Token.create(existing_user)
 
