@@ -32,6 +32,9 @@ class UsersResource(Resource):
             # if user exists, throw
             abort(http_status_code=409, message="{} exists already".format(params['email']))
 
+        if 'password' not in params:
+            abort(400, msg="no password provided")
+
         password = params['password']
         hashed_pwd = bcrypt.hashpw(password, bcrypt.gensalt())
 
