@@ -34,8 +34,8 @@ class TestUserResource(BaseResourceTest):
 
     def _create_user_manager_user(self, **overrides):
         options = {
-            'email': "adminuser@adminuser.com",
-            'name': "adminuser",
+            'email': "usermanager@usermanager.com",
+            'name': "usermanager",
             'password': "123123123",
             'is_admin': False,
             'is_user_manager': True
@@ -635,3 +635,93 @@ class TestUserResource(BaseResourceTest):
         user = query.first()
 
         eq_(user.is_user_manager, True)
+
+    def test_query_users(self):
+        self.user_manager = self._create_user_manager_user()
+        self.user_manager_jwt_token = self._create_token_for_user(
+            self.user_manager
+        ).jwt_token
+
+        for i in range(15):
+            self._create_user(email="regularuser.{}@email.com".format(i + 1))
+
+        assert User.query.count() == 16
+
+        response = self.test_client.get(
+            '/api/users',
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_jwt_token
+            }
+        )
+
+        eq_(len(response.json['users']), 10, "does not default to page 1")
+
+        response = self.test_client.get(
+            '/api/users',
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_jwt_token
+            },
+            query_string="p=1"
+        )
+        eq_(len(response.json['users']), 10)
+
+        response = self.test_client.get(
+            '/api/users',
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_jwt_token
+            },
+            query_string="p=2"
+        )
+        eq_(len(response.json['users']), 6)
+
+        response = self.test_client.get(
+            '/api/users',
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_jwt_token
+            },
+            query_string="p=3"
+        )
+        eq_(len(response.json['users']), 0)
+
+    def test_query_users__limited_by_role(self):
+        self.user = self._create_user()
+        self.user_jwt_token = self._create_token_for_user(
+            self.user
+        ).jwt_token
+        self.user_manager = self._create_user_manager_user()
+        self.user_manager_jwt_token = self._create_token_for_user(
+            self.user_manager
+        ).jwt_token
+        self.admin = self._create_admin_user()
+        self.admin_jwt_token = self._create_token_for_user(
+            self.admin
+        ).jwt_token
+
+        for i in range(15):
+            self._create_user(email="regularuser.{}@email.com".format(i + 1))
+
+        assert User.query.count() == 15 + 3
+
+        response = self.test_client.get(
+            '/api/users',
+            headers={
+                'Authorization': 'Bearer ' + self.admin_jwt_token
+            }
+        )
+        eq_(response.status_code, 200)
+
+        response = self.test_client.get(
+            '/api/users',
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_jwt_token
+            }
+        )
+        eq_(response.status_code, 200)
+
+        response = self.test_client.get(
+            '/api/users',
+            headers={
+                'Authorization': 'Bearer ' + self.user_jwt_token
+            }
+        )
+        eq_(response.status_code, 401)
