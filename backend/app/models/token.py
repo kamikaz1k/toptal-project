@@ -16,10 +16,24 @@ class Token(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey("user.id"), nullable=False)
     user = relationship("User", backref="user")
-    jwt_token = db.Column(db.String(300), nullable=False, index=True, unique=True)
+    jwt_token = db.Column(
+        db.String(300),
+        nullable=False,
+        index=True,
+        unique=True
+    )
 
-    updated_at = db.Column(db.TIMESTAMP, nullable=False, default=func.now(), onupdate=func.now)
-    created_at = db.Column(db.TIMESTAMP, nullable=False, server_default=func.now())
+    updated_at = db.Column(
+        db.TIMESTAMP,
+        nullable=False,
+        default=func.now(),
+        onupdate=func.now()
+    )
+    created_at = db.Column(
+        db.TIMESTAMP,
+        nullable=False,
+        server_default=func.now()
+    )
 
     expires_on = db.Column(db.TIMESTAMP, nullable=False)
     revoked_on = db.Column(db.TIMESTAMP, nullable=True)
