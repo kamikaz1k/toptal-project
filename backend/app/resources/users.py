@@ -54,6 +54,6 @@ class UsersResource(Resource):
 
         query = User.query_active_users()
 
-        result = query.paginate(page, per_page=50, error_out=False)
+        result = query.paginate(page, per_page=10, error_out=False)
 
         return {'users': result.items}
