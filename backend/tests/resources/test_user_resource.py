@@ -1,3 +1,5 @@
+import copy
+
 from nose.tools import eq_, ok_
 
 from app.models.token import Token
@@ -18,6 +20,28 @@ class TestUserResource(BaseResourceTest):
         }
         options.update(overrides)
         return User.create(**options)
+
+    def _create_admin_user(self, **overrides):
+        options = {
+            'email': "adminuser@adminuser.com",
+            'name': "adminuser",
+            'password': "123123123",
+            'is_admin': True,
+            'is_user_manager': False
+        }
+        options.update(overrides)
+        return self._create_user(**options)
+
+    def _create_user_manager_user(self, **overrides):
+        options = {
+            'email': "adminuser@adminuser.com",
+            'name': "adminuser",
+            'password': "123123123",
+            'is_admin': False,
+            'is_user_manager': True
+        }
+        options.update(overrides)
+        return self._create_user(**options)
 
     def _create_token_for_user(self, user):
         return Token.create(user)
@@ -100,3 +124,257 @@ class TestUserResource(BaseResourceTest):
 
         eq_(response.status_code, 200)
         ok_(self.user.deleted)
+
+    def test_update_user(self):
+        NEW_NAME = "NEW NAME FOR UPDATE"
+        NEW_CALORIES = 9001
+
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        payload = self.test_client.get(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            }
+        )
+
+        payload.json['user']['name'] = NEW_NAME
+        payload.json['user']['calories_per_day'] = NEW_CALORIES
+
+        response = self.test_client.put(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            },
+            json=payload.json
+
+        )
+
+        self.assert_json(payload.json, response.json)
+
+    def test_update_user__cannot_make_admin(self):
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        get_response = self.test_client.get(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            }
+        )
+        payload = copy.deepcopy(get_response.json)
+        payload['user']['is_admin'] = True
+
+        put_response = self.test_client.put(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            },
+            json=payload
+
+        )
+
+        self.assert_json(put_response.json, get_response.json)
+
+    def test_update_user__cannot_make_user_manager(self):
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        get_response = self.test_client.get(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            }
+        )
+        payload = copy.deepcopy(get_response.json)
+        payload['user']['is_user_manager'] = True
+
+        put_response = self.test_client.put(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            },
+            json=payload
+
+        )
+
+        self.assert_json(put_response.json, get_response.json)
+
+    def test_user_cannot_get_different_user(self):
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        self.user_two = self._create_user(email="newemail@email.org")
+        self.user_two_token = self._create_token_for_user(self.user_two)
+
+        response = self.test_client.get(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_two_token.jwt_token
+            }
+        )
+
+        eq_(response.status_code, 401)
+
+    def test_user_cannot_update_different_user(self):
+        NEW_NAME = "NEW NAME FOR UPDATE"
+        NEW_CALORIES = 9001
+
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        self.user_two = self._create_user(email="newemail@email.org")
+        self.user_two_token = self._create_token_for_user(self.user_two)
+
+        payload = self.test_client.get(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            }
+        )
+
+        payload.json['user']['name'] = NEW_NAME
+        payload.json['user']['calories_per_day'] = NEW_CALORIES
+
+        response = self.test_client.put(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_two_token.jwt_token
+            },
+            json=payload.json
+
+        )
+
+        eq_(response.status_code, 401)
+
+    def test_user_cannot_delete_different_user(self):
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        self.user_two = self._create_user(email="newemail@email.org")
+        self.user_two_token = self._create_token_for_user(self.user_two)
+
+        assert self.user.deleted is False
+
+        response = self.test_client.delete(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_two_token.jwt_token
+            }
+        )
+
+        eq_(response.status_code, 401)
+        eq_(self.user.deleted, False)
+
+    def test_update_user__admin_can_make_user_manager(self):
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        self.admin = self._create_admin_user()
+        self.admin_token = self._create_token_for_user(self.admin)
+
+        get_response = self.test_client.get(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.admin_token.jwt_token
+            }
+        )
+        payload = get_response.json
+        payload['user']['is_user_manager'] = True
+
+        put_response = self.test_client.put(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.admin_token.jwt_token
+            },
+            json=payload
+
+        )
+
+        self.assert_json(put_response.json, payload)
+
+    def test_update_user__admin_can_make_admin(self):
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        self.admin = self._create_admin_user()
+        self.admin_token = self._create_token_for_user(self.admin)
+
+        get_response = self.test_client.get(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.admin_token.jwt_token
+            }
+        )
+        payload = get_response.json
+        payload['user']['is_admin'] = True
+
+        put_response = self.test_client.put(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.admin_token.jwt_token
+            },
+            json=payload
+
+        )
+
+        self.assert_json(put_response.json, payload)
+
+    def test_update_user__user_manager_can_make_user_manager(self):
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        self.user_manager = self._create_user_manager_user()
+        self.user_manager_token = self._create_token_for_user(
+            self.user_manager
+        )
+
+        get_response = self.test_client.get(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_token.jwt_token
+            }
+        )
+        payload = get_response.json
+        payload['user']['is_user_manager'] = True
+
+        put_response = self.test_client.put(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_token.jwt_token
+            },
+            json=payload
+
+        )
+
+        self.assert_json(put_response.json, payload)
+
+    def test_update_user__user_manager_can_make_admin(self):
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        self.user_manager = self._create_user_manager_user()
+        self.user_manager_token = self._create_token_for_user(
+            self.user_manager
+        )
+
+        get_response = self.test_client.get(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_token.jwt_token
+            }
+        )
+        payload = get_response.json
+        payload['user']['is_admin'] = True
+
+        put_response = self.test_client.put(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_token.jwt_token
+            },
+            json=payload
+
+        )
+
+        self.assert_json(put_response.json, payload)
