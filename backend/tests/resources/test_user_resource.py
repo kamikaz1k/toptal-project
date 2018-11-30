@@ -1,9 +1,14 @@
-from nose.tools import eq_
+from nose.tools import eq_, ok_
 
-from app.resources.user import User
+from app.models.token import Token
+from app.models.user import User
 from tests.resources import BaseResourceTest
 
+
 class TestUserResource(BaseResourceTest):
+
+    def setup(self):
+        super(TestUserResource, self).setup()
 
     def _create_user(self, **overrides):
         options = {
@@ -14,8 +19,11 @@ class TestUserResource(BaseResourceTest):
         options.update(overrides)
         return User.create(**options)
 
+    def _create_token_for_user(self, user):
+        return Token.create(user)
+
     def test_create_user(self):
-        result = self.test_client.post(
+        response = self.test_client.post(
             '/api/users',
             json={
                 'user': {
@@ -26,9 +34,9 @@ class TestUserResource(BaseResourceTest):
             }
         )
 
-        eq_(result.status_code, 200)
+        eq_(response.status_code, 200)
         self.assert_json(
-            result.json,
+            response.json,
             {
                 'user': {
                     'id': 1,
@@ -43,7 +51,7 @@ class TestUserResource(BaseResourceTest):
         )
 
     def test_create_user__no_password(self):
-        result = self.test_client.post(
+        response = self.test_client.post(
             '/api/users',
             json={
                 "user": {
@@ -53,14 +61,14 @@ class TestUserResource(BaseResourceTest):
             }
         )
 
-        eq_(result.status_code, 400)
-        eq_(result.json, { "msg": "no password provided" })
+        eq_(response.status_code, 400)
+        eq_(response.json, {"msg": "no password provided"})
 
     def test_create_user__email_taken(self):
         EMAIL = "regularuser@regularuser.com"
 
         self._create_user(email=EMAIL)
-        result = self.test_client.post(
+        response = self.test_client.post(
             '/api/users',
             json={
                 "user": {
@@ -71,6 +79,24 @@ class TestUserResource(BaseResourceTest):
             }
         )
 
-        eq_(result.status_code, 409)
-        eq_(result.json, { "msg": "no password provided" })
+        eq_(response.status_code, 409)
+        eq_(
+            response.json,
+            {'message': 'regularuser@regularuser.com exists already'}
+        )
 
+    def test_delete_user(self):
+        self.user = self._create_user()
+        self.user_token = self._create_token_for_user(self.user)
+
+        assert self.user.deleted is False
+
+        response = self.test_client.delete(
+            '/api/users/{}'.format(self.user.id),
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            }
+        )
+
+        eq_(response.status_code, 200)
+        ok_(self.user.deleted)
