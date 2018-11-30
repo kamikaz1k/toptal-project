@@ -378,3 +378,260 @@ class TestUserResource(BaseResourceTest):
         )
 
         self.assert_json(put_response.json, payload)
+
+    def test_create_user__unauthd_cannot_make_admin(self):
+        EMAIL = "unauthd@unauthd.com"
+        payload = {
+            'user': {
+                'email': EMAIL,
+                'name': "unauthd",
+                'password': "123123123",
+                'calories_per_day': 0,
+                'active': True,
+                'is_admin': True,
+                'is_user_manager': False
+            }
+        }
+
+        response = self.test_client.post(
+            '/api/users',
+            json=payload
+        )
+
+        eq_(response.json['user']['is_admin'], False)
+
+        query = User.query.filter(User.email == EMAIL)
+        user = query.first()
+
+        eq_(user.is_admin, False)
+
+    def test_create_user__user_cannot_make_admin(self):
+        self.user = self._create_user()
+        self.user_jwt_token = self._create_token_for_user(
+            self.user
+        ).jwt_token
+        EMAIL = "unauthd@unauthd.com"
+
+        payload = {
+            'user': {
+                'email': EMAIL,
+                'name': "unauthd",
+                'password': "123123123",
+                'calories_per_day': 0,
+                'active': True,
+                'is_admin': True,
+                'is_user_manager': False
+            }
+        }
+
+        response = self.test_client.post(
+            '/api/users',
+            json=payload,
+            headers={
+                'Authorization': 'Bearer ' + self.user_jwt_token
+            }
+        )
+
+        eq_(response.json['user']['is_admin'], False)
+
+        query = User.query.filter(User.email == EMAIL)
+        user = query.first()
+
+        eq_(user.is_admin, False)
+
+    def test_create_user__admin_can_make_admin(self):
+        self.admin = self._create_admin_user()
+        self.admin_jwt_token = self._create_token_for_user(
+            self.admin
+        ).jwt_token
+        EMAIL = "regularuser@regularuser.com"
+
+        payload = {
+            'user': {
+                'email': EMAIL,
+                'name': "regularuser",
+                'password': "123123123",
+                'calories_per_day': 0,
+                'active': True,
+                'is_admin': True,
+                'is_user_manager': False
+            }
+        }
+
+        response = self.test_client.post(
+            '/api/users',
+            json=payload,
+            headers={
+                'Authorization': 'Bearer ' + self.admin_jwt_token
+            }
+        )
+
+        eq_(response.json['user']['is_admin'], True)
+
+        query = User.query.filter(User.email == EMAIL)
+        user = query.first()
+
+        eq_(user.is_admin, True)
+
+    def test_create_user__user_manager_make_admin(self):
+        self.user_manager = self._create_user_manager_user()
+        self.user_manager_jwt_token = self._create_token_for_user(
+            self.user_manager
+        ).jwt_token
+        EMAIL = "regularuser@regularuser.com"
+
+        payload = {
+            'user': {
+                'email': EMAIL,
+                'name': "regularuser",
+                'password': "123123123",
+                'calories_per_day': 0,
+                'active': True,
+                'is_admin': True,
+                'is_user_manager': False
+            }
+        }
+
+        response = self.test_client.post(
+            '/api/users',
+            json=payload,
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_jwt_token
+            }
+        )
+
+        eq_(response.json['user']['is_admin'], True)
+
+        query = User.query.filter(User.email == EMAIL)
+        user = query.first()
+
+        eq_(user.is_admin, True)
+# USER MAANGER
+
+    def test_create_user__unauthd_cannot_make_user_manager(self):
+        EMAIL = "unauthd@unauthd.com"
+        payload = {
+            'user': {
+                'email': EMAIL,
+                'name': "unauthd",
+                'password': "123123123",
+                'calories_per_day': 0,
+                'active': True,
+                'is_admin': False,
+                'is_user_manager': True
+            }
+        }
+
+        response = self.test_client.post(
+            '/api/users',
+            json=payload
+        )
+
+        eq_(response.json['user']['is_user_manager'], False)
+
+        query = User.query.filter(User.email == EMAIL)
+        user = query.first()
+
+        eq_(user.is_user_manager, False)
+
+    def test_create_user__user_cannot_make_user_manager(self):
+        self.user = self._create_user()
+        self.user_jwt_token = self._create_token_for_user(
+            self.user
+        ).jwt_token
+        EMAIL = "unauthd@unauthd.com"
+
+        payload = {
+            'user': {
+                'email': EMAIL,
+                'name': "unauthd",
+                'password': "123123123",
+                'calories_per_day': 0,
+                'active': True,
+                'is_admin': False,
+                'is_user_manager': True
+            }
+        }
+
+        response = self.test_client.post(
+            '/api/users',
+            json=payload,
+            headers={
+                'Authorization': 'Bearer ' + self.user_jwt_token
+            }
+        )
+
+        eq_(response.json['user']['is_user_manager'], False)
+
+        query = User.query.filter(User.email == EMAIL)
+        user = query.first()
+
+        eq_(user.is_user_manager, False)
+
+    def test_create_user__admin_can_make_user_manager(self):
+        self.admin = self._create_admin_user()
+        self.admin_jwt_token = self._create_token_for_user(
+            self.admin
+        ).jwt_token
+        EMAIL = "regularuser@regularuser.com"
+
+        payload = {
+            'user': {
+                'email': EMAIL,
+                'name': "regularuser",
+                'password': "123123123",
+                'calories_per_day': 0,
+                'active': True,
+                'is_admin': False,
+                'is_user_manager': True
+            }
+        }
+
+        response = self.test_client.post(
+            '/api/users',
+            json=payload,
+            headers={
+                'Authorization': 'Bearer ' + self.admin_jwt_token
+            }
+        )
+
+        eq_(response.json['user']['is_user_manager'], True)
+
+        query = User.query.filter(User.email == EMAIL)
+        user = query.first()
+
+        eq_(user.is_user_manager, True)
+
+    def test_create_user__user_manager_make_user_manager(self):
+        self.user_manager = self._create_user_manager_user()
+        self.user_manager_jwt_token = self._create_token_for_user(
+            self.user_manager
+        ).jwt_token
+        EMAIL = "regularuser@regularuser.com"
+
+        payload = {
+            'user': {
+                'email': EMAIL,
+                'name': "regularuser",
+                'password': "123123123",
+                'calories_per_day': 0,
+                'active': True,
+                'is_admin': False,
+                'is_user_manager': True
+            }
+        }
+
+        response = self.test_client.post(
+            '/api/users',
+            json=payload,
+            headers={
+                'Authorization': 'Bearer ' + self.user_manager_jwt_token
+            }
+        )
+
+        eq_(response.json['user']['is_user_manager'], True)
+
+        query = User.query.filter(User.email == EMAIL)
+        user = query.first()
+
+        eq_(user.is_user_manager, True)
