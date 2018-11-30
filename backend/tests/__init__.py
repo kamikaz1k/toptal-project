@@ -3,6 +3,8 @@ from nose.tools import eq_
 
 from app import create_app, db
 from app.models.role import Role, RoleNames
+from app.models.token import Token
+from app.models.user import User
 
 
 class BaseDatabaseTestCase(object):
@@ -30,7 +32,6 @@ class BaseDatabaseTestCase(object):
         self._ctx = self.app.test_request_context()
         self._ctx.push()
 
-
     def _insert_user_role_data(self):
         for role in RoleNames:
             db.session.add(Role(name=role))
@@ -43,3 +44,36 @@ class BaseDatabaseTestCase(object):
     def teardown(self):
         self._ctx.pop()
 
+    def _create_user(self, **overrides):
+        options = {
+            'email': "regularuser@regularuser.com",
+            'name': "regularuser",
+            'password': "123123123"
+        }
+        options.update(overrides)
+        return User.create(**options)
+
+    def _create_admin_user(self, **overrides):
+        options = {
+            'email': "adminuser@adminuser.com",
+            'name': "adminuser",
+            'password': "123123123",
+            'is_admin': True,
+            'is_user_manager': False
+        }
+        options.update(overrides)
+        return self._create_user(**options)
+
+    def _create_user_manager_user(self, **overrides):
+        options = {
+            'email': "usermanager@usermanager.com",
+            'name': "usermanager",
+            'password': "123123123",
+            'is_admin': False,
+            'is_user_manager': True
+        }
+        options.update(overrides)
+        return self._create_user(**options)
+
+    def _create_token_for_user(self, user):
+        return Token.create(user)

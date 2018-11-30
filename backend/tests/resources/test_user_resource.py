@@ -9,9 +9,6 @@ from tests.resources import BaseResourceTest
 
 class TestUserResource(BaseResourceTest):
 
-    def setup(self):
-        super(TestUserResource, self).setup()
-
     def _create_user(self, **overrides):
         options = {
             'email': "regularuser@regularuser.com",
