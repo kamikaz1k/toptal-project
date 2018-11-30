@@ -28,8 +28,6 @@ class UsersResource(Resource):
         existing = User.query.filter(User.email == params['email']).count()
 
         if existing > 0:
-            print("{} exists already...".format(params['email']))
-            # if user exists, throw
             abort(http_status_code=409, message="{} exists already".format(params['email']))
 
         if 'password' not in params:
