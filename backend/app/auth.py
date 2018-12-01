@@ -9,7 +9,7 @@ from app.models.token import Token
 def authorize(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        token = _extract_token_from_request(request)
+        token = extract_token_from_request(request)
         user = _get_user_from_token(token)
 
         if user is None:
@@ -23,14 +23,14 @@ def authorize(func):
 def authorize_if_token_available(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        token = _extract_token_from_request(request)
+        token = extract_token_from_request(request)
         g.user = _get_user_from_token(token)
 
         return func(*args, **kwargs)
     return wrapper
 
 
-def _extract_token_from_request(request):
+def extract_token_from_request(request):
     auth_header = request.headers.get('Authorization', "")
     return auth_header.replace('Bearer ', "")
 

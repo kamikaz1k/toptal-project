@@ -38,6 +38,10 @@ class Token(db.Model):
     expires_on = db.Column(db.TIMESTAMP, nullable=False)
     revoked_on = db.Column(db.TIMESTAMP, nullable=True)
 
+    def revoke(self):
+        self.revoked_on = datetime.now()
+        self.save()
+
     def save(self):
         db.session.add(self)
         db.session.commit()
