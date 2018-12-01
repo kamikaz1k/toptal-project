@@ -24,7 +24,10 @@ class BaseDatabaseTestCase(object):
             # db.drop_all_tables()
             db.engine.execute('SET FOREIGN_KEY_CHECKS = 0;')
             for table in db.metadata.sorted_tables:
-                db.engine.execute('DROP TABLE IF EXISTS {};'.format(table.name))
+                # DROP Ran 77 tests in 65.791s
+                # db.engine.execute('DROP TABLE IF EXISTS {};'.format(table.name))
+                # TRUNCATE Ran 77 tests in 51.197s
+                db.engine.execute('TRUNCATE TABLE {};'.format(table.name))
             db.engine.execute('SET FOREIGN_KEY_CHECKS = 1;')
             # ---------
             db.create_all()
