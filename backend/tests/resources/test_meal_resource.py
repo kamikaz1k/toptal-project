@@ -336,5 +336,101 @@ class TestMealResource(BaseResourceTest):
 
         eq_(response.status_code, 401)
 
-    def test_query_meal(self):
-        pass
+    def test_query_meals(self):
+
+        for i in range(15):
+            self._create_meal(name="Test Meal #{}".format(i + 1))
+
+        assert Meal.query.count() == 15
+
+        response = self.test_client.get(
+            '/api/meals',
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            }
+        )
+        eq_(response.status_code, 200)
+        eq_(len(response.json['meals']), 10)
+
+        response = self.test_client.get(
+            '/api/meals',
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            },
+            query_string="p=1"
+        )
+        eq_(response.status_code, 200)
+        eq_(len(response.json['meals']), 10)
+
+        response = self.test_client.get(
+            '/api/meals',
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            },
+            query_string="p=2"
+        )
+        eq_(response.status_code, 200)
+        eq_(len(response.json['meals']), 5)
+
+        response = self.test_client.get(
+            '/api/meals',
+            headers={
+                'Authorization': 'Bearer ' + self.user_token.jwt_token
+            },
+            query_string="p=3"
+        )
+        eq_(response.status_code, 200)
+        eq_(len(response.json['meals']), 0)
+
+    def test_query_meals__different_user(self):
+        self._create_meal()
+        user_two = self._create_user(email="something@email.com")
+        user_two_token = self._create_token_for_user(user_two)
+
+        response = self.test_client.get(
+            '/api/meals',
+            headers={
+                'Authorization': 'Bearer ' + user_two_token.jwt_token
+            },
+            query_string="p=2"
+        )
+        eq_(response.status_code, 200)
+        eq_(len(response.json['meals']), 0)
+
+    def test_query_meals__different_user_manager_user(self):
+        self._create_meal()
+        user_two = self._create_user_manager_user(email="something@email.com")
+        user_two_token = self._create_token_for_user(user_two)
+
+        response = self.test_client.get(
+            '/api/meals',
+            headers={
+                'Authorization': 'Bearer ' + user_two_token.jwt_token
+            },
+            query_string="p=2"
+        )
+        eq_(response.status_code, 200)
+        eq_(len(response.json['meals']), 0)
+
+    def test_query_meals__different_admin_user(self):
+        self._create_meal()
+        user_two = self._create_admin_user(email="something@email.com")
+        user_two_token = self._create_token_for_user(user_two)
+
+        response = self.test_client.get(
+            '/api/meals',
+            headers={
+                'Authorization': 'Bearer ' + user_two_token.jwt_token
+            },
+            query_string="p=2"
+        )
+        eq_(response.status_code, 200)
+        eq_(len(response.json['meals']), 0)
+
+    def test_query_meals__unauthd(self):
+        self._create_meal()
+        response = self.test_client.get(
+            '/api/meals'
+        )
+
+        eq_(response.status_code, 401)
