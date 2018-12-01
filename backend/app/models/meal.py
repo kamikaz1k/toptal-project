@@ -29,13 +29,15 @@ class Meal(db.Model):
         **props
     ):
         meal = cls()
+        meal.owner_user_id = props['owner_user_id']
         meal.update(**props)
         return meal
 
     def update(self, **props):
-        self.owner_user_id = props.pop('owner_user_id', self.owner_user_id)
         self.text = props.pop('text', self.text)
-        self.entry_datetime = parse(props.pop('entry_datetime', self.entry_datetime))
+        if 'entry_datetime' in props:
+            self.entry_datetime = parse(props.pop('entry_datetime'))
+
         self.calorie_count = props.pop('calorie_count', self.calorie_count)
 
         self.entry_date = self.entry_datetime.date()
