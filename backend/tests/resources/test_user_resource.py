@@ -2,46 +2,11 @@ import copy
 
 from nose.tools import eq_, ok_
 
-from app.models.token import Token
 from app.models.user import User
 from tests.resources import BaseResourceTest
 
 
 class TestUserResource(BaseResourceTest):
-
-    def _create_user(self, **overrides):
-        options = {
-            'email': "regularuser@regularuser.com",
-            'name': "regularuser",
-            'password': "123123123"
-        }
-        options.update(overrides)
-        return User.create(**options)
-
-    def _create_admin_user(self, **overrides):
-        options = {
-            'email': "adminuser@adminuser.com",
-            'name': "adminuser",
-            'password': "123123123",
-            'is_admin': True,
-            'is_user_manager': False
-        }
-        options.update(overrides)
-        return self._create_user(**options)
-
-    def _create_user_manager_user(self, **overrides):
-        options = {
-            'email': "usermanager@usermanager.com",
-            'name': "usermanager",
-            'password': "123123123",
-            'is_admin': False,
-            'is_user_manager': True
-        }
-        options.update(overrides)
-        return self._create_user(**options)
-
-    def _create_token_for_user(self, user):
-        return Token.create(user)
 
     def test_create_user(self):
         response = self.test_client.post(
