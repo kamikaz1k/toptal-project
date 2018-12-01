@@ -1,9 +1,8 @@
 import moment from 'moment';
 import Route from '@ember/routing/route';
-import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import { inject } from '@ember/service';
 
-export default Route.extend(AuthenticatedRouteMixin, {
+export default Route.extend({
 
   store: inject(),
 

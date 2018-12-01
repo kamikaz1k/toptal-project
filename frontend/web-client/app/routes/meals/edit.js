@@ -1,6 +1,5 @@
 import moment from 'moment';
 import Route from '@ember/routing/route';
-import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import { inject } from '@ember/service';
 import jwtDecode from 'ember-jwt-decode';
 
@@ -8,7 +7,7 @@ const TIME_FORMAT_AM = 'hh:mm A';
 const DATE_FORMAT = 'YYYY-MM-DD';
 const DATETIME_FORMAT = `${DATE_FORMAT} ${TIME_FORMAT_AM}`;
 
-export default Route.extend(AuthenticatedRouteMixin, {
+export default Route.extend({
 
   session: inject(),
 
