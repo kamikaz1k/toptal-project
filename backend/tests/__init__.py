@@ -1,3 +1,5 @@
+from email.utils import format_datetime
+
 from json_delta import udiff
 from nose.tools import eq_
 
@@ -40,6 +42,15 @@ class BaseDatabaseTestCase(object):
     def assert_json(self, expected, actual):
         diff = "\n".join(udiff(expected, actual))
         eq_(diff, ' {...}', diff)
+
+    def assert_datetime(self, expected, actual):
+        if not isinstance(expected, str):
+            expected = format_datetime(expected)
+
+        if not isinstance(actual, str):
+            actual = format_datetime(actual)
+
+        return eq_(actual, expected)
 
     def teardown(self):
         self._ctx.pop()
