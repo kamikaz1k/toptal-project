@@ -659,10 +659,7 @@ class TestUserResource(BaseResourceTest):
             self.admin
         ).jwt_token
 
-        for i in range(15):
-            self._create_user(email="regularuser.{}@email.com".format(i + 1))
-
-        assert User.query.count() == 15 + 3
+        assert User.query.count() == 3
 
         response = self.test_client.get(
             '/api/users',
