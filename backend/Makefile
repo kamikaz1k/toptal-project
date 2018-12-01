@@ -11,4 +11,4 @@ server:
 	python create_app.py
 
 tests:
-	python -m nose -s tests/
+	python -m nose -s --verbosity=3 tests/
