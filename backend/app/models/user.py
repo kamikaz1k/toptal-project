@@ -90,8 +90,12 @@ class User(db.Model):
             cls.deleted_at.is_(None)
         ).one_or_none()
 
-        if bcrypt.checkpw(password, user.password):
+        if user and cls.verify_password(password, user.password):
             return user
+
+    @staticmethod
+    def verify_password(password, hashed_password):
+        return bcrypt.checkpw(password, hashed_password)
 
     @classmethod
     def query_active_users(cls):
