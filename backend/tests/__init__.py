@@ -10,6 +10,14 @@ from app.models.user import User
 
 
 class BaseDatabaseTestCase(object):
+    # Having a global app saves on test cleanup and instantiation
+    # Also, since connection pools are bound to engines
+    # this allows connections to be pooled correctly
+    # instead of having idle connections
+
+    # Ran 77 tests in 45.646s
+    # vs 51.197s
+    app = None
 
     def __init__(self):
         super(BaseDatabaseTestCase, self).__init__()
@@ -17,11 +25,15 @@ class BaseDatabaseTestCase(object):
             'TESTING': True,
             'SQLALCHEMY_DATABASE_URI': "mysql+mysqldb://root@localhost/toptal_project_test?charset=utf8"
         }
-        self.app = create_app(test_config)
+
+        if BaseDatabaseTestCase.app is None:
+            BaseDatabaseTestCase.app = create_app(test_config)
+
+        self.app = BaseDatabaseTestCase.app
 
     def setup(self):
+
         with self.app.app_context():
-            # db.drop_all_tables()
             db.engine.execute('SET FOREIGN_KEY_CHECKS = 0;')
             for table in db.metadata.sorted_tables:
                 # DROP Ran 77 tests in 65.791s
