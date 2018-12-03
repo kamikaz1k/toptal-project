@@ -2,6 +2,7 @@ from email.utils import format_datetime
 
 from json_delta import udiff
 from nose.tools import eq_
+from sqlalchemy import event
 
 from app import create_app, db
 from app.models.role import Role, RoleNames
@@ -28,12 +29,11 @@ class BaseDatabaseTestCase(object):
 
         if BaseDatabaseTestCase.app is None:
             BaseDatabaseTestCase.app = create_app(test_config)
+            self._setup_database()
 
-        self.app = BaseDatabaseTestCase.app
-
-    def setup(self):
-
+    def _setup_database(self):
         with self.app.app_context():
+
             db.engine.execute('SET FOREIGN_KEY_CHECKS = 0;')
             for table in db.metadata.sorted_tables:
                 # DROP Ran 77 tests in 65.791s
@@ -46,13 +46,56 @@ class BaseDatabaseTestCase(object):
 
             self._insert_user_role_data()
 
-        self._ctx = self.app.test_request_context()
-        self._ctx.push()
-
     def _insert_user_role_data(self):
         for role in RoleNames:
             db.session.add(Role(name=role))
             db.session.commit()
+
+    def setup(self):
+        self._ctx = self.app.test_request_context()
+        self._ctx.push()
+        # Transaction Rollback Ran 77 tests in 33.902s
+        self._setup_nested_txn()
+
+    def _setup_nested_txn(self):
+
+        # connect to the database
+        self.connection = db.engine.connect()
+
+        # begin a non-ORM transaction
+        self.transaction = self.connection.begin()
+
+        options = dict(bind=self.connection, binds={})
+        self.session = db.create_scoped_session(options=options)
+
+        db.session = self.session
+
+        # then each time that SAVEPOINT ends, reopen it
+        @event.listens_for(self.session, "after_transaction_end")
+        def restart_savepoint(session, transaction):
+            if transaction.nested and not transaction._parent.nested:
+                # ensure that state is expired the way
+                # session.commit() at the top level normally does
+                # (optional step)
+                session.expire_all()
+
+                session.begin_nested()
+
+    def _teardown_nested_txn(self):
+
+        self.session.close()
+
+        # rollback - everything that happened with the
+        # Session above (including calls to commit())
+        # is rolled back.
+        self.transaction.rollback()
+
+        # return connection to the Engine
+        self.connection.close()
+
+    def teardown(self):
+        self._teardown_nested_txn()
+        self._ctx.pop()
 
     def assert_json(self, expected, actual):
         diff = "\n".join(udiff(expected, actual))
@@ -66,9 +109,6 @@ class BaseDatabaseTestCase(object):
             actual = format_datetime(actual)
 
         return eq_(actual, expected)
-
-    def teardown(self):
-        self._ctx.pop()
 
     def _create_user(self, **overrides):
         options = {

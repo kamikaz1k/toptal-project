@@ -21,11 +21,13 @@ class TestUserResource(BaseResourceTest):
         )
 
         eq_(response.status_code, 200)
+
+        user = User.query.first()
         self.assert_json(
             response.json,
             {
                 'user': {
-                    'id': 1,
+                    'id': user.id,
                     'email': 'regularuser@regularuser.com',
                     'name': 'usrmgr3',
                     'calories_per_day': 0,
