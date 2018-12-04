@@ -5,3 +5,5 @@ mysqlclient
 bcrypt
 PyJWT
 python-dateutil
+json-delta
+nosetests

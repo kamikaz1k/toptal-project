@@ -1,9 +1,7 @@
-import bcrypt
 from flask import g, request
 from flask_restful import abort, fields, marshal_with, Resource
 
-from app.auth import authorize
-from app.models.role import Role, RoleNames
+from app.auth import authorize, authorize_if_token_available
 from app.models.user import User
 from app.resources.user import user_resource_fields
 
@@ -14,6 +12,8 @@ users_resource_fields = {
 
 
 class UsersResource(Resource):
+
+    @authorize_if_token_available
     @marshal_with(user_resource_fields, envelope='user')
     def post(self):
         # get request parameters
@@ -24,22 +24,20 @@ class UsersResource(Resource):
 
         params = params['user']
 
-        # get users by email
+        # get users by email -- doesn't check for active
         existing = User.query.filter(User.email == params['email']).count()
 
         if existing > 0:
-            print("{} exists already...".format(params['email']))
-            # if user exists, throw
-            abort(http_status_code=409, message="{} exists already".format(params['email']))
+            abort(409, message="{} exists already".format(params['email']))
 
-        password = params['password']
-        hashed_pwd = bcrypt.hashpw(password, bcrypt.gensalt())
+        if 'password' not in params:
+            abort(400, msg="no password provided")
 
         create_props = params.copy()
-        create_props['password'] = hashed_pwd
 
-        create_props.pop('is_admin', None)
-        create_props.pop('is_user_manager', None)
+        if g.user is None or not g.user.can_update_users:
+            create_props.pop('is_admin', None)
+            create_props.pop('is_user_manager', None)
 
         user = User.create(**create_props)
 
@@ -56,6 +54,6 @@ class UsersResource(Resource):
 
         query = User.query_active_users()
 
-        result = query.paginate(page, per_page=50, error_out=False)
+        result = query.paginate(page, per_page=10, error_out=False)
 
-        return { 'users': result.items }
+        return {'users': result.items}

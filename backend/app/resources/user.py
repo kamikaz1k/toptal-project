@@ -1,4 +1,3 @@
-from dateutil.parser import parse
 from flask import g, request
 from flask_restful import abort, fields, marshal_with, Resource
 
