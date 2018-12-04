@@ -1,0 +1,22 @@
+languge: python
+
+python:
+  - '3.4'
+  - '3.5'
+  - '3.6'
+
+services:
+  - mysql
+
+env:
+  - TEST_DATABASE_URL = "mysql+mysqldb://root@127.0.0.1/toptal_project_test?charset=utf8"
+
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+
+install:
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+
+script:
+  cd backend && nosetests -s tests/

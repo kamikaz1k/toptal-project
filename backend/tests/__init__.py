@@ -1,4 +1,5 @@
 from email.utils import format_datetime
+from os import environ
 
 from json_delta import udiff
 from nose.tools import eq_
@@ -8,6 +9,9 @@ from app import create_app, db
 from app.models.role import Role, RoleNames
 from app.models.token import Token
 from app.models.user import User
+
+
+LOCAL_DB_TEST_URL = "mysql+mysqldb://root@localhost/toptal_project_test?charset=utf8"
 
 
 class BaseDatabaseTestCase(object):
@@ -24,7 +28,10 @@ class BaseDatabaseTestCase(object):
         super(BaseDatabaseTestCase, self).__init__()
         test_config = {
             'TESTING': True,
-            'SQLALCHEMY_DATABASE_URI': "mysql+mysqldb://root@localhost/toptal_project_test?charset=utf8"
+            'SQLALCHEMY_DATABASE_URI': environ.get(
+                'TEST_DATABASE_URL',
+                LOCAL_DB_TEST_URL
+            )
         }
 
         if BaseDatabaseTestCase.app is None:
