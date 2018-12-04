@@ -15,4 +15,4 @@ install:
   - pip install -r backend/requirements.txt
 
 script:
-  cd backend && make test
+  cd backend && make test-user

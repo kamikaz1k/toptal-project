@@ -12,3 +12,6 @@ server:
 
 test:
 	python -m nose -s --verbosity=3 tests/
+
+test-user:
+	python -m nose -s --verbosity=3 tests/models/test_user_model.py
