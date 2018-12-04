@@ -11,7 +11,7 @@ env:
   - TEST_DATABASE_URL = "mysql+mysqldb://root@127.0.0.1/toptal_project_test?charset=utf8"
 
 before_install:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS toptal_project_test;'
 
 install:
   - pip install -r backend/requirements.txt
