@@ -36,7 +36,8 @@ class User(db.Model):
 
     @staticmethod
     def hash_password(password):
-        return bcrypt.hashpw(password, bcrypt.gensalt())
+        bytes_object = bytes(password, 'utf-8')
+        return bcrypt.hashpw(bytes_object, bcrypt.gensalt())
 
     @classmethod
     def create(cls, **props):
