@@ -40,7 +40,9 @@ class BaseDatabaseTestCase(object):
 
     def _setup_database(self):
         with self.app.app_context():
-
+            # Create tables if they dont exist
+            db.create_all()
+            # Truncate data if rows exist
             db.engine.execute('SET FOREIGN_KEY_CHECKS = 0;')
             for table in db.metadata.sorted_tables:
                 # DROP Ran 77 tests in 65.791s
@@ -49,8 +51,6 @@ class BaseDatabaseTestCase(object):
                 db.engine.execute('TRUNCATE TABLE {};'.format(table.name))
             db.engine.execute('SET FOREIGN_KEY_CHECKS = 1;')
             # ---------
-            db.create_all()
-
             self._insert_user_role_data()
 
     def _insert_user_role_data(self):

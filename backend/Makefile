@@ -1,4 +1,4 @@
-.PHONY: help tests env
+.PHONY: help server test
 
 help:
 	@echo "Toptal Calorie Tracker Backend"
@@ -10,5 +10,8 @@ help:
 server:
 	python create_app.py
 
-tests:
+test:
 	python -m nose -s --verbosity=3 tests/
+
+test-user:
+	python -m nose -s --verbosity=3 tests/models/test_user_model.py
