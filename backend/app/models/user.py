@@ -99,6 +99,10 @@ class User(db.Model):
     def verify_password(password, hashed_password):
         if isinstance(password, str):
             password = bytes(password, 'utf-8')
+
+        if isinstance(hashed_password, str):
+            hashed_password = bytes(hashed_password, 'utf-8')
+
         return bcrypt.checkpw(password, hashed_password)
 
     @classmethod
