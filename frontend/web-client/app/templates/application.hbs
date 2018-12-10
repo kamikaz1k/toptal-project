@@ -1,12 +1,15 @@
 <nav class="navbar navbar-light bg-light">
-  {{#link-to 'meals.list' class="navbar-brand"}}Toptal Calorie Tracker{{/link-to}}
+  {{#link-to 'meals.list' class="navbar-brand"}}Track Meals{{/link-to}}
+
   {{#if isAdmin}}
     {{#link-to 'users.list' class="btn btn-outline-info"}}Manage Users{{/link-to}}
   {{else if isUserManager}}
     {{#link-to 'users.list' class="btn btn-outline-info"}}Manage Users{{/link-to}}
   {{/if}}
+
   {{#if session.isAuthenticated}}
-    {{#link-to 'logout' class="btn btn-danger"}}Logout{{/link-to}}
+    {{#link-to 'profile' class="nav-item nav-link"}}Profile{{/link-to}}
+    {{#link-to 'logout' class="nav-item nav-link"}}Logout{{/link-to}}
   {{else}}
     {{#link-to 'login' class="btn btn-danger"}}Login{{/link-to}}
   {{/if}}

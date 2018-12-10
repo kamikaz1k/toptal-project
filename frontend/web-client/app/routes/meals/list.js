@@ -1,9 +1,8 @@
 import Route from '@ember/routing/route';
-import AuthenticatedRouteMixin from 'ember-simple-auth/mixins/authenticated-route-mixin';
 import { inject } from '@ember/service';
 import { decamelize } from '@ember/string';
 
-export default Route.extend(AuthenticatedRouteMixin, {
+export default Route.extend({
 
   queryParams: {
     p: { refreshModel: true },

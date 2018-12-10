@@ -10,7 +10,7 @@ Router.map(function() {
   this.route('signup');
   this.route('login');
   this.route('meals', function() {
-    this.route('list');
+    this.route('list', { path: '/' });
     this.route('new');
     this.route('edit', { path: 'edit/:mealId' });
     this.route('search');
@@ -18,10 +18,11 @@ Router.map(function() {
   this.route('logout');
 
   this.route('users', function() {
-    this.route('list');
+    this.route('list', { path: '/' });
     this.route('edit', { path: 'edit/:userId' });
     this.route('new');
   });
+  this.route('profile');
 });
 
 export default Router;
