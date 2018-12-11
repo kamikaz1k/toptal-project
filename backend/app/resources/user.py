@@ -9,7 +9,7 @@ user_resource_fields = {
     'id': fields.Integer,
     'email': fields.String,
     'name': fields.String,
-    'calories_per_day': fields.Integer,
+    'calories_per_day': fields.Integer(default=None),
     'active': fields.Boolean(attribute=lambda m: not m.deleted),
     'is_admin': fields.Boolean,
     'is_user_manager': fields.Boolean,
