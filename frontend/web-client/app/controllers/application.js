@@ -7,7 +7,7 @@ export default Controller.extend({
 
   session: inject(),
 
-  isAdmin: computed('session', function() {
+  isAdmin: computed('session.data.authenticated.token', function() {
     let token = this.get('session.data.authenticated.token');
     if (token) {
       let decoded = jwtDecode(token);
@@ -16,7 +16,7 @@ export default Controller.extend({
     return false;
   }),
 
-  isUserManager: computed('session', function() {
+  isUserManager: computed('session.data.authenticated.token', function() {
     let token = this.get('session.data.authenticated.token');
     if (token) {
       let decoded = jwtDecode(token);
