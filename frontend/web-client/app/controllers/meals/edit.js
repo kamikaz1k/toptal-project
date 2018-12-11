@@ -1,9 +1,14 @@
 import Controller from '@ember/controller';
 import { computed } from '@ember/object';
+import { isEmpty } from '@ember/utils';
 
 export default Controller.extend({
 
-  caloriesForUser: computed('user', function() {
+  hasCalories: computed('user.caloriesPerDay', function() {
+    return !isEmpty(this.get('user.caloriesPerDay'));
+  }),
+
+  caloriesForUser: computed('user.caloriesPerDay', function() {
     return this.get('user.caloriesPerDay') || 0;
   }),
 

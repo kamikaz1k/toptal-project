@@ -37,7 +37,7 @@ export default Route.extend({
       controller.set('mealsOfDay', results);
     });
 
-    this.get('store').queryRecord('user', user_id).then(result => {
+    this.get('store').findRecord('user', user_id).then(result => {
       controller.set('user', result);
     });
 

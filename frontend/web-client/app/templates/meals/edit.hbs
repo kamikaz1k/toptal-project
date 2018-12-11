@@ -2,7 +2,7 @@
   <h3>Edit Your Meal</h3>
   {{#if overBudget}}
     <h4 class="btn btn-outline-danger">You are over your caloric budget! {{caloriesConsumed}} vs {{caloriesForUser}}</h4>
-  {{else}}
+  {{else if hasCalories}}
     <h4 class="btn btn-outline-success">Great job! You only ate {{caloriesConsumed}} kcal</h4>
   {{/if}}
   <div>
