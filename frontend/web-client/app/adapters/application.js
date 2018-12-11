@@ -3,5 +3,6 @@ import TokenAuthorizerMixin from 'ember-simple-auth-token/mixins/token-authorize
 
 export default DS.RESTAdapter.extend(
   TokenAuthorizerMixin, {
-  namespace: 'api'
+  namespace: 'api',
+  ensureResponseAuthorized() {/* Ember Simple Auth by default invalidates on 401*/},
 });
