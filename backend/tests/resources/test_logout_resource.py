@@ -31,7 +31,7 @@ class TestLogoutResource(BaseResourceTest):
 
     def test_logout_failure__no_token(self):
         response = self.test_client.post('/auth/logout')
-        eq_(response.status_code, 400)
+        eq_(response.status_code, 200)
 
     def test_logout_failure__invalid_token(self):
         response = self.test_client.post(
@@ -40,7 +40,7 @@ class TestLogoutResource(BaseResourceTest):
                 'Authorization': 'Bearer invalidtoken'
             }
         )
-        eq_(response.status_code, 400)
+        eq_(response.status_code, 200)
 
     def test_logout_failure__expired_token(self):
         self.user_token.expires_on = datetime.now() - timedelta(days=1)
@@ -52,7 +52,7 @@ class TestLogoutResource(BaseResourceTest):
                 'Authorization': 'Bearer ' + self.user_token.jwt_token
             }
         )
-        eq_(response.status_code, 401)
+        eq_(response.status_code, 200)
 
     def test_logout_failure__revoked_token(self):
         self.user_token.revoke()
@@ -62,4 +62,4 @@ class TestLogoutResource(BaseResourceTest):
                 'Authorization': 'Bearer ' + self.user_token.jwt_token
             }
         )
-        eq_(response.status_code, 400)
+        eq_(response.status_code, 200)

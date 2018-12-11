@@ -30,7 +30,7 @@ class TestUserResource(BaseResourceTest):
                     'id': user.id,
                     'email': 'regularuser@regularuser.com',
                     'name': 'usrmgr3',
-                    'calories_per_day': 0,
+                    'calories_per_day': None,
                     'active': True,
                     'is_admin': False,
                     'is_user_manager': False
