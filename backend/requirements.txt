@@ -9,3 +9,5 @@ json-delta
 nose
 pytest
 pytest-xdist
+pytest-testmon
+pytest-watch

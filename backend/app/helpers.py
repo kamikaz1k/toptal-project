@@ -8,4 +8,3 @@ def encode_jwt(jwt_dict):
 
 def decode_jwt(jwt_string):
     return jwt.decode(jwt_string, current_app.config['JWT_SECRET'])
-
