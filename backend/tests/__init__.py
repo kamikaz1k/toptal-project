@@ -4,6 +4,7 @@ from os import environ
 from json_delta import udiff
 from nose.tools import eq_
 from sqlalchemy import event
+from faker import Faker
 
 from app import create_app, db
 from app.models.role import Role, RoleNames
@@ -23,9 +24,11 @@ class BaseDatabaseTestCase(object):
     # Ran 77 tests in 45.646s
     # vs 51.197s
     app = None
+    fake = Faker()
 
-    def __init__(self):
-        super(BaseDatabaseTestCase, self).__init__()
+    @classmethod
+    def setup_class(cls):
+
         test_config = {
             'TESTING': True,
             'SQLALCHEMY_DATABASE_URI': environ.get(
@@ -36,10 +39,11 @@ class BaseDatabaseTestCase(object):
 
         if BaseDatabaseTestCase.app is None:
             BaseDatabaseTestCase.app = create_app(test_config)
-            self._setup_database()
+            cls._setup_database()
 
-    def _setup_database(self):
-        with self.app.app_context():
+    @classmethod
+    def _setup_database(cls):
+        with cls.app.app_context():
             # Create tables if they dont exist
             db.create_all()
             # Truncate data if rows exist
@@ -51,14 +55,15 @@ class BaseDatabaseTestCase(object):
                 db.engine.execute('TRUNCATE TABLE {};'.format(table.name))
             db.engine.execute('SET FOREIGN_KEY_CHECKS = 1;')
             # ---------
-            self._insert_user_role_data()
+            cls._insert_user_role_data()
 
-    def _insert_user_role_data(self):
+    @classmethod
+    def _insert_user_role_data(cls):
         for role in RoleNames:
             db.session.add(Role(name=role))
             db.session.commit()
 
-    def setup(self):
+    def setup_method(self, method=None):
         self._ctx = self.app.test_request_context()
         self._ctx.push()
         # Transaction Rollback Ran 77 tests in 33.902s
@@ -100,7 +105,7 @@ class BaseDatabaseTestCase(object):
         # return connection to the Engine
         self.connection.close()
 
-    def teardown(self):
+    def teardown_method(self):
         self._teardown_nested_txn()
         self._ctx.pop()
 
@@ -118,18 +123,20 @@ class BaseDatabaseTestCase(object):
         return eq_(actual, expected)
 
     def _create_user(self, **overrides):
+        name = self.fake.name()
         options = {
-            'email': "regularuser@regularuser.com",
-            'name': "regularuser",
+            'email': name.replace(" ", '.').lower() + "@regularuser.com",
+            'name': name,
             'password': "123123123"
         }
         options.update(overrides)
         return User.create(**options)
 
     def _create_admin_user(self, **overrides):
+        name = self.fake.name()
         options = {
-            'email': "adminuser@adminuser.com",
-            'name': "adminuser",
+            'email': name.replace(" ", '.').lower() + "@adminuser.com",
+            'name': name,
             'password': "123123123",
             'is_admin': True,
             'is_user_manager': False
@@ -138,9 +145,10 @@ class BaseDatabaseTestCase(object):
         return self._create_user(**options)
 
     def _create_user_manager_user(self, **overrides):
+        name = self.fake.name()
         options = {
-            'email': "usermanager@usermanager.com",
-            'name': "usermanager",
+            'email': name.replace(" ", '.').lower() + "@usermanager.com",
+            'name': name,
             'password': "123123123",
             'is_admin': False,
             'is_user_manager': True

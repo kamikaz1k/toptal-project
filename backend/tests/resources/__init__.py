@@ -1,11 +1,12 @@
-from app import create_app, db
 from tests import BaseDatabaseTestCase
+
 
 class BaseResourceTest(BaseDatabaseTestCase):
 
-    def __init__(self):
-        super(BaseResourceTest, self).__init__()
-        self.test_client = self.app.test_client()
+    @classmethod
+    def setup_class(cls):
+        super(BaseResourceTest, cls).setup_class()
+        cls.test_client = cls.app.test_client()
 
-    def setup(self):
-        super(BaseResourceTest, self).setup()
+    def setup_method(self, method=None):
+        super(BaseResourceTest, self).setup_method()

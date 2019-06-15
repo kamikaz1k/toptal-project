@@ -1,17 +1,29 @@
-.PHONY: help server test
+.PHONY: install help server test
+
+VENV=venv
+PYTHON=$(VENV)/bin/python3
+PIP=$(VENV)/bin/pip
 
 help:
 	@echo "Toptal Calorie Tracker Backend"
 	@echo "### Commands ###"
 	@echo "env"
 	@echo "server"
-	@echo "tests"
+	@echo "test"
+
+env:
+	test -d $(VENV) || virtualenv $(VENV) -p python3
+	@echo "\`$(VENV)\` is virtualenv"
+
+install: env
+	$(PIP) install -r requirements.txt
 
 server:
-	python create_app.py
+	$(PYTHON) create_app.py
 
 test:
-	python -m nose -s --verbosity=3 tests/
+	$(PYTHON) -m pytest -n4 tests/
 
 test-user:
-	python -m nose -s --verbosity=3 tests/models/test_user_model.py
+	$(PYTHON) -m pytest tests/resources/test_user_resource.py
+# 	$(PYTHON) -m pytest tests/models/test_user_model.py

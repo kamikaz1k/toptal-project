@@ -9,8 +9,8 @@ from tests.resources import BaseResourceTest
 
 class TestMealResource(BaseResourceTest):
 
-    def setup(self):
-        super(TestMealResource, self).setup()
+    def setup_method(self, method=None):
+        super(TestMealResource, self).setup_method()
         self.user = self._create_user()
         self.user_token = self._create_token_for_user(self.user)
 

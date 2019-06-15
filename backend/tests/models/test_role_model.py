@@ -6,8 +6,8 @@ from tests import BaseDatabaseTestCase
 
 class TestRole(BaseDatabaseTestCase):
 
-    def setup(self):
-        super(TestRole, self).setup()
+    def setup_method(self, method=None):
+        super(TestRole, self).setup_method()
         Role.create_user_roles()
 
     def test_get_user_role(self):

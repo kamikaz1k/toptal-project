@@ -20,13 +20,13 @@ class TestMeal(BaseDatabaseTestCase):
         props.update(options)
         return Meal.create(**props)
 
-    def setup(self):
-        super(TestMeal, self).setup()
-
+    def setup_method(self, method=None):
+        super(TestMeal, self).setup_method()
+        name = self.fake.name()
         self.user = User(
-            email="test@email.org",
+            email=name.replace(" ", '.').lower() + ".test@email.org",
             password="23k12n312n31nl13bj5",
-            name="Slim Jim"
+            name=name
         )
         self.user.save()
 
